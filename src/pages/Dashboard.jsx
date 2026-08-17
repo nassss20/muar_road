@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Search, Map as MapIcon, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Search, Map as MapIcon, Edit2, Trash2, Sparkles, FileSpreadsheet } from 'lucide-react';
 import { fetchProjects, fetchLccaResults, deleteProject } from '../lib/api';
 import ProjectModal from '../components/ProjectModal';
+import LccaDetailModal from '../components/LccaDetailModal';
 
 export default function Dashboard() {
   const [projects, setProjects] = useState([]);
   const [lccaResults, setLccaResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('registry');
+
+  // LCCA Detail Modal State
+  const [selectedLccaAlternative, setSelectedLccaAlternative] = useState(null);
+  const [isLccaModalOpen, setIsLccaModalOpen] = useState(false);
 
   const [showFab, setShowFab] = useState(false);
   const headerBtnRef = useRef(null);
@@ -84,47 +89,65 @@ export default function Dashboard() {
     return matchSearch && matchRoad && matchMix;
   });
 
+  // Calculate Metrics
+  const totalKm = projects.reduce((acc, p) => acc + (Math.abs((parseFloat(p.end_km) || 0) - (parseFloat(p.start_km) || 0))), 0);
+  const totalCost = projects.reduce((acc, p) => acc + (parseFloat(p.cost_rm) || 0), 0);
+  const totalMaintCost = projects.reduce((acc, p) => acc + (parseFloat(p.maintenance_cost) || 0), 0);
+  const recurringDistressCount = projects.filter(p => p.is_recurring === 'Ya').length;
+  const topAlternative = lccaResults.length > 0 ? lccaResults[0] : null;
+
   const getMixColorClasses = (mix) => {
     switch (mix?.toUpperCase()) {
-      case 'CMA':
-        return 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800';
-      case 'CRMA':
-        return 'bg-pink-50 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300 border-pink-200 dark:border-pink-800';
-      case 'LATEX':
-        return 'bg-white text-gray-700 dark:bg-gray-200 dark:text-gray-900 border-gray-300 dark:border-gray-400';
+      case 'STANDARD ROAD':
+        return 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border-cyan-500/30';
       case 'SFM':
-        return 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border-blue-200 dark:border-blue-800';
+        return 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/30';
+      case 'CMA':
+        return 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30';
+      case 'CRMA':
+        return 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/30';
+      case 'LATEX':
+        return 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/30';
       default:
-        return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+        return 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30';
     }
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
 
       {/* Header Actions */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Manage and monitor Muar road assets.</p>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+              Dashboard
+            </h1>
+          </div>
         </div>
         <button
           ref={headerBtnRef}
           onClick={handleAdd}
-          className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition-all shadow-md shadow-emerald-500/20"
+          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-600 via-teal-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-cyan-500/25 border border-cyan-400/20 hover:scale-[1.02] active:scale-[0.98]"
         >
-          <Plus size={18} />
+          <Plus size={19} className="stroke-[2.5]" />
           Add New Road Record
         </button>
       </div>
 
+
+
       {/* ArcGIS Map Embedded */}
-      <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-200/50 dark:border-zinc-800/50 overflow-hidden">
-        <div className="p-4 border-b border-gray-200/50 dark:border-zinc-800/50 flex items-center gap-2 bg-gray-50/50 dark:bg-zinc-950/50">
-          <MapIcon size={18} className="text-gray-500" />
-          <h2 className="font-semibold text-gray-700 dark:text-gray-200">GIS Visualization</h2>
+      <div className="glass-panel rounded-2xl shadow-xl overflow-hidden border border-slate-200/80 dark:border-slate-800/80">
+        <div className="p-4 border-b border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between bg-slate-50/80 dark:bg-slate-950/80">
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
+              <MapIcon size={18} />
+            </div>
+            <h2 className="font-semibold text-slate-800 dark:text-slate-200 text-sm sm:text-base">GIS Road Layer Visualization</h2>
+          </div>
         </div>
-        <div className="h-[600px] w-full">
+        <div className="h-[550px] w-full relative">
           <iframe
             src="https://www.arcgis.com/apps/dashboards/a39283d010a0452ca27094d5cd3caffa"
             width="100%"
@@ -137,41 +160,41 @@ export default function Dashboard() {
       </div>
 
       {/* Data Section */}
-      <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-200/50 dark:border-zinc-800/50 overflow-hidden">
+      <div className="glass-panel rounded-2xl shadow-xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden">
 
         {/* Tabs and Filters */}
-        <div className="p-4 border-b border-gray-200/50 dark:border-zinc-800/50 bg-gray-50/50 dark:bg-zinc-950/50 flex flex-col lg:flex-row justify-between gap-4">
-          <div className="flex gap-2 p-1 bg-gray-200/50 dark:bg-zinc-800/50 rounded-lg self-start">
+        <div className="p-4 sm:p-5 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/60 dark:bg-slate-950/60 flex flex-col lg:flex-row justify-between gap-4 items-stretch lg:items-center">
+          <div className="flex p-1 bg-slate-200/70 dark:bg-slate-800/70 rounded-xl self-start">
             <button
               onClick={() => setActiveTab('registry')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'registry' ? 'bg-white dark:bg-zinc-700 shadow-sm text-emerald-600 dark:text-emerald-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+              className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeTab === 'registry' ? 'bg-white dark:bg-slate-700 shadow-md text-cyan-600 dark:text-cyan-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
             >
               Road Project Registry
             </button>
             <button
               onClick={() => setActiveTab('lcca')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'lcca' ? 'bg-white dark:bg-zinc-700 shadow-sm text-emerald-600 dark:text-emerald-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+              className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeTab === 'lcca' ? 'bg-white dark:bg-slate-700 shadow-md text-cyan-600 dark:text-cyan-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
             >
-              Pavement Alternatives Evaluation (NPV Result)
+              Life Cycle Cost Analysis (LCCA)
             </button>
           </div>
 
           {activeTab === 'registry' && (
             <div className="flex flex-wrap gap-3">
-              <div className="relative">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <div className="relative flex-1 sm:flex-initial">
+                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Search projects..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  className="pl-9 pr-4 py-2 bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/50 outline-none w-full sm:w-64"
+                  className="pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 outline-none w-full sm:w-64 transition-all"
                 />
               </div>
               <select
                 value={filterRoad}
                 onChange={e => setFilterRoad(e.target.value)}
-                className="px-3 py-2 bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/50 outline-none"
+                className="px-3.5 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all"
               >
                 <option value="">All Roads</option>
                 <option value="Muar By Pass">Muar Bypass (FT0224)</option>
@@ -182,11 +205,11 @@ export default function Dashboard() {
               <select
                 value={filterMix}
                 onChange={e => setFilterMix(e.target.value)}
-                className="px-3 py-2 bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/50 outline-none"
+                className="px-3.5 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all"
               >
                 <option value="">All Mixes</option>
-                <option value="Specialty Mix">Specialty Mix</option>
-                <option value="Tinggi">Tinggi</option>
+                <option value="Standard Road">Standard Road</option>
+                <option value="SFM">SFM</option>
                 <option value="CMA">CMA</option>
                 <option value="CRMA">CRMA</option>
                 <option value="LATEX">LATEX</option>
@@ -200,56 +223,62 @@ export default function Dashboard() {
           {activeTab === 'registry' ? (
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 dark:bg-zinc-900/50 border-b border-gray-200 dark:border-zinc-800 text-xs uppercase text-gray-500 dark:text-gray-400 font-semibold tracking-wider sticky top-0 z-10 shadow-sm">
-                  <th className="px-4 py-3">Bil</th>
-                  <th className="px-4 py-3">Nama Laluan</th>
-                  <th className="px-4 py-3">Route No</th>
-                  <th className="px-4 py-3">Dari (KM)</th>
-                  <th className="px-4 py-3">Ke (KM)</th>
-                  <th className="px-4 py-3 text-center">Pavement Mix</th>
-                  <th className="px-4 py-3">Alternative</th>
-                  <th className="px-4 py-3">Cost (RM)</th>
-                  <th className="px-4 py-3">Distress Type</th>
-                  <th className="px-4 py-3">Is Recurring</th>
-                  <th className="px-4 py-3 text-right sticky right-0 bg-gray-50 dark:bg-zinc-900/50">Action</th>
+                <tr className="bg-slate-100/80 dark:bg-slate-950/80 border-b border-slate-200/80 dark:border-slate-800/80 text-[11px] uppercase text-slate-500 dark:text-slate-400 font-bold tracking-wider sticky top-0 z-10 shadow-sm backdrop-blur-md">
+                  <th className="px-4 py-3.5">Bil</th>
+                  <th className="px-4 py-3.5">Nama Laluan</th>
+                  <th className="px-4 py-3.5">Route No</th>
+                  <th className="px-4 py-3.5">Dari (KM)</th>
+                  <th className="px-4 py-3.5">Ke (KM)</th>
+                  <th className="px-4 py-3.5 text-center">Pavement Mix</th>
+                  <th className="px-4 py-3.5">Alternative</th>
+                  <th className="px-4 py-3.5">Initial Cost</th>
+                  <th className="px-4 py-3.5">Maint. Cost</th>
+                  <th className="px-4 py-3.5">Distress Type</th>
+                  <th className="px-4 py-3.5">Recurring</th>
+                  <th className="px-4 py-3.5 text-right sticky right-0 bg-slate-100 dark:bg-slate-950">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-zinc-800 text-sm">
+              <tbody className="divide-y divide-slate-200/60 dark:divide-slate-800/60 text-sm">
                 {loading ? (
-                  <tr><td colSpan="11" className="px-4 py-8 text-center text-gray-500">Loading projects...</td></tr>
+                  <tr><td colSpan="12" className="px-4 py-12 text-center text-slate-400">Loading road network registry...</td></tr>
                 ) : filteredProjects.length === 0 ? (
-                  <tr><td colSpan="11" className="px-4 py-8 text-center text-gray-500">No projects found.</td></tr>
+                  <tr><td colSpan="12" className="px-4 py-12 text-center text-slate-400">No project records found.</td></tr>
                 ) : (
                   filteredProjects.map(p => (
-                    <tr key={p.id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
-                      <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{p.id}</td>
-                      <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{p.road_name}</td>
+                    <tr key={p.id} className="hover:bg-slate-100/50 dark:hover:bg-slate-800/40 transition-colors">
+                      <td className="px-4 py-3 text-slate-400 text-xs font-mono">{p.id}</td>
+                      <td className="px-4 py-3 font-semibold text-slate-900 dark:text-slate-100">{p.road_name}</td>
                       <td className="px-4 py-3">
-                        <span className="px-2 py-1 rounded bg-gray-100 dark:bg-zinc-800 text-xs font-medium">{p.route_no || '-'}</span>
+                        <span className="px-2.5 py-1 rounded-md bg-slate-200/60 dark:bg-slate-800 text-xs font-medium font-mono text-slate-700 dark:text-slate-300">{p.route_no || '-'}</span>
                       </td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{p.start_km}</td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{p.end_km}</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs">{p.start_km}</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs">{p.end_km}</td>
                       <td className="px-4 py-3 text-center">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getMixColorClasses(p.mix_category)}`}>
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getMixColorClasses(p.mix_category)}`}>
                           {p.mix_category}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{p.pavement_alternative}</td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-300">RM {p.cost_rm?.toLocaleString()}</td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{p.distress_1_type}</td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-medium text-xs">{p.pavement_alternative || '-'}</td>
+                      <td className="px-4 py-3 text-slate-700 dark:text-slate-200 font-semibold text-xs whitespace-nowrap">RM {p.cost_rm?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 text-xs whitespace-nowrap">{p.maintenance_cost ? `RM ${p.maintenance_cost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '-'}</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 text-xs">{p.distress_1_type || '-'}</td>
+                      <td className="px-4 py-3 text-xs font-medium">
                         {p.is_recurring === 'Ya' ? (
-                          <span className="text-red-500 font-medium">Ya</span>
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                            Yes (Ya)
+                          </span>
                         ) : (
-                          <span className="text-gray-500">{p.is_recurring || '-'}</span>
+                          <span className="text-slate-500 dark:text-slate-400">
+                            No (Tidak)
+                          </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right sticky right-0 bg-white dark:bg-zinc-900 border-l border-gray-100 dark:border-zinc-800">
-                        <div className="flex justify-end gap-2">
-                          <button onClick={() => handleEdit(p)} className="p-1.5 text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/30 rounded-lg transition-colors">
+                      <td className="px-4 py-3 text-right sticky right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-l border-slate-200/50 dark:border-slate-800/50">
+                        <div className="flex justify-end gap-1.5">
+                          <button onClick={() => handleEdit(p)} className="p-1.5 text-cyan-600 hover:bg-cyan-50 dark:text-cyan-400 dark:hover:bg-cyan-950/50 rounded-lg transition-colors" title="Edit">
                             <Edit2 size={16} />
                           </button>
-                          <button onClick={() => handleDelete(p.id)} className="p-1.5 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30 rounded-lg transition-colors">
+                          <button onClick={() => handleDelete(p.id)} className="p-1.5 text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/50 rounded-lg transition-colors" title="Delete">
                             <Trash2 size={16} />
                           </button>
                         </div>
@@ -262,33 +291,53 @@ export default function Dashboard() {
           ) : (
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 dark:bg-zinc-900/50 border-b border-gray-200 dark:border-zinc-800 text-xs uppercase text-gray-500 dark:text-gray-400 font-semibold tracking-wider sticky top-0 z-10 shadow-sm">
-                  <th className="px-4 py-3">Rank</th>
-                  <th className="px-4 py-3">Pavement Alternative</th>
-                  <th className="px-4 py-3">Avg Initial Cost (RM)</th>
-                  <th className="px-4 py-3">Total Maintenance (RM)</th>
-                  <th className="px-4 py-3">Maint-to-Initial Ratio</th>
-                  <th className="px-4 py-3">NPV (RM) (4% rate)</th>
-                  <th className="px-4 py-3">Latest Distress Level</th>
-                  <th className="px-4 py-3">Remark & Recommendation</th>
+                <tr className="bg-slate-100/80 dark:bg-slate-950/80 border-b border-slate-200/80 dark:border-slate-800/80 text-[11px] uppercase text-slate-500 dark:text-slate-400 font-bold tracking-wider sticky top-0 z-10 shadow-sm backdrop-blur-md">
+                  <th className="px-4 py-3.5">Rank</th>
+                  <th className="px-4 py-3.5">Pavement Alternative</th>
+                  <th className="px-4 py-3.5">Avg Initial Cost</th>
+                  <th className="px-4 py-3.5">Total Maintenance</th>
+                  <th className="px-4 py-3.5">Ratio</th>
+                  <th className="px-4 py-3.5">NPV Cost (4%)</th>
+                  <th className="px-4 py-3.5">Distress Level</th>
+                  <th className="px-4 py-3.5">Recommendation</th>
+                  <th className="px-4 py-3.5 text-center">20-Yr Cashflow Schedule</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-zinc-800 text-sm">
+              <tbody className="divide-y divide-slate-200/60 dark:divide-slate-800/60 text-sm">
                 {loading ? (
-                  <tr><td colSpan="8" className="px-4 py-8 text-center text-gray-500">Loading calculations...</td></tr>
+                  <tr><td colSpan="9" className="px-4 py-12 text-center text-slate-400">Loading LCCA calculations...</td></tr>
                 ) : lccaResults.length === 0 ? (
-                  <tr><td colSpan="8" className="px-4 py-8 text-center text-gray-500">No results found.</td></tr>
+                  <tr><td colSpan="9" className="px-4 py-12 text-center text-slate-400">No LCCA evaluation data found.</td></tr>
                 ) : (
                   lccaResults.map((r, i) => (
-                    <tr key={i} className={`transition-colors ${r.alternative === 'SFM' ? 'bg-blue-50/60 dark:bg-blue-900/20 hover:bg-blue-100/50 dark:hover:bg-blue-900/40 border-l-4 border-blue-500' : 'hover:bg-gray-50 dark:hover:bg-zinc-800/50 border-l-4 border-transparent'}`}>
-                      <td className="px-4 py-3 font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">#{r.ranking}</td>
-                      <td className="px-4 py-3 font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{r.alternative}</td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-300 whitespace-nowrap">RM {r.initial_cost?.toLocaleString()}</td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-300 whitespace-nowrap">RM {r.maintenance_cost?.toLocaleString()}</td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-300 whitespace-nowrap">{r.cost_ratio}</td>
-                      <td className="px-4 py-3 font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">RM {r.npv?.toLocaleString()}</td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-300 min-w-[150px]">{r.distress_level}</td>
-                      <td className="px-4 py-3 text-gray-500 dark:text-gray-400 min-w-[250px]">{r.remark}</td>
+                    <tr key={i} className={`transition-colors ${r.alternative === 'SFM' ? 'bg-cyan-500/10 dark:bg-cyan-950/30 hover:bg-cyan-500/15 border-l-4 border-cyan-500' : 'hover:bg-slate-100/50 dark:hover:bg-slate-800/40 border-l-4 border-transparent'}`}>
+                      <td className="px-4 py-3.5 font-bold text-slate-900 dark:text-white whitespace-nowrap">
+                        {r.ranking === 1 ? (
+                          <span className="inline-flex items-center gap-1 text-amber-500 font-extrabold">
+                            <Sparkles size={14} /> #{r.ranking}
+                          </span>
+                        ) : `#${r.ranking}`}
+                      </td>
+                      <td className="px-4 py-3.5 font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">{r.alternative}</td>
+                      <td className="px-4 py-3.5 text-slate-600 dark:text-slate-300 font-mono text-xs whitespace-nowrap">RM {r.initial_cost?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-3.5 text-slate-600 dark:text-slate-300 font-mono text-xs whitespace-nowrap">RM {r.maintenance_cost?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-3.5 text-slate-600 dark:text-slate-300 font-mono text-xs whitespace-nowrap">{r.cost_ratio}</td>
+                      <td className="px-4 py-3.5 font-extrabold text-cyan-600 dark:text-cyan-400 font-mono text-xs whitespace-nowrap">RM {r.npv?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-3.5 text-slate-600 dark:text-slate-300 min-w-[140px] text-xs">{r.distress_level}</td>
+                      <td className="px-4 py-3.5 text-slate-500 dark:text-slate-400 min-w-[220px] text-xs leading-relaxed">{r.remark}</td>
+                      <td className="px-4 py-3.5 text-center">
+                        <button
+                          onClick={() => {
+                            setSelectedLccaAlternative(r.alternative);
+                            setIsLccaModalOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition-all hover:scale-105 active:scale-95 shadow-xs"
+                          title="View 20-Year LCCA Schedule Breakdown Spreadsheet"
+                        >
+                          <FileSpreadsheet size={14} />
+                          20-Yr Schedule
+                        </button>
+                      </td>
                     </tr>
                   ))
                 )}
@@ -308,10 +357,16 @@ export default function Dashboard() {
         }}
       />
 
+      <LccaDetailModal
+        isOpen={isLccaModalOpen}
+        onClose={() => setIsLccaModalOpen(false)}
+        alternativeKey={selectedLccaAlternative}
+      />
+
       {showFab && (
         <button
           onClick={handleAdd}
-          className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 flex items-center justify-center w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-2xl shadow-emerald-500/30 transition-transform animate-fade-in hover:scale-105"
+          className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 flex items-center justify-center w-14 h-14 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white rounded-full shadow-2xl shadow-cyan-500/40 border border-cyan-400/30 transition-transform animate-fade-in hover:scale-105"
           title="Add New Record"
         >
           <Plus size={28} />
