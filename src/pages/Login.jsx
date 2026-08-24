@@ -37,7 +37,6 @@ export default function Login() {
           <h1 className="text-2xl font-extrabold text-cyan-600 dark:text-cyan-400">
             PaveWise Portal
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1.5 font-medium">Agency Infrastructure Access</p>
         </div>
 
         {error && (
@@ -81,7 +80,7 @@ export default function Login() {
             disabled={isSubmitting}
             className="w-full py-3.5 px-4 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl shadow-lg shadow-cyan-500/25 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed text-sm"
           >
-            {isSubmitting ? 'Authenticating...' : 'Secure Login'}
+            {isSubmitting ? 'Authenticating...' : 'Login'}
           </button>
         </form>
       </div>
