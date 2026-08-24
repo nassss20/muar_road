@@ -12,7 +12,6 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
     mix_category: 'Standard Road',
     pavement_alternative: '',
     cost_rm: '',
-    maintenance_cost: '',
     lane_type: '',
     distress_1_type: '',
     is_recurring: 'Tidak',
@@ -35,7 +34,6 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
         mix_category: project.mix_category || 'Standard Road',
         pavement_alternative: project.pavement_alternative || '',
         cost_rm: project.cost_rm || '',
-        maintenance_cost: project.maintenance_cost || '',
         lane_type: project.lane_type || '',
         distress_1_type: project.distress_1_type || '',
         is_recurring: project.is_recurring || 'Tidak',
@@ -53,7 +51,6 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
         mix_category: 'Standard Road',
         pavement_alternative: '',
         cost_rm: '',
-        maintenance_cost: '',
         lane_type: '',
         distress_1_type: '',
         is_recurring: 'Tidak',
@@ -82,7 +79,6 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
       start_km: parseFloat(formData.start_km) || 0,
       end_km: parseFloat(formData.end_km) || 0,
       cost_rm: parseFloat(formData.cost_rm) || 0,
-      maintenance_cost: parseFloat(formData.maintenance_cost) || 0,
       latitude: formData.latitude ? parseFloat(formData.latitude) : null,
       longitude: formData.longitude ? parseFloat(formData.longitude) : null
     };
@@ -158,10 +154,6 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Initial Cost (RM)</label>
               <input type="number" step="0.01" name="cost_rm" value={formData.cost_rm} onChange={handleChange} placeholder="0.00" className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Maintenance Cost (RM)</label>
-              <input type="number" step="0.01" name="maintenance_cost" value={formData.maintenance_cost} onChange={handleChange} placeholder="0.00" className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" />
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Lane / Direction</label>

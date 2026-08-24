@@ -92,7 +92,6 @@ export default function Dashboard() {
   // Calculate Metrics
   const totalKm = projects.reduce((acc, p) => acc + (Math.abs((parseFloat(p.end_km) || 0) - (parseFloat(p.start_km) || 0))), 0);
   const totalCost = projects.reduce((acc, p) => acc + (parseFloat(p.cost_rm) || 0), 0);
-  const totalMaintCost = projects.reduce((acc, p) => acc + (parseFloat(p.maintenance_cost) || 0), 0);
   const recurringDistressCount = projects.filter(p => p.is_recurring === 'Ya').length;
   const topAlternative = lccaResults.length > 0 ? lccaResults[0] : null;
 
@@ -235,7 +234,6 @@ export default function Dashboard() {
                   <th className="px-4 py-3.5 text-center">Pavement Mix</th>
                   <th className="px-4 py-3.5">Alternative</th>
                   <th className="px-4 py-3.5">Initial Cost</th>
-                  <th className="px-4 py-3.5">Maint. Cost</th>
                   <th className="px-4 py-3.5">Distress Type</th>
                   <th className="px-4 py-3.5">Recurring</th>
                   <th className="px-4 py-3.5 text-right sticky right-0 bg-slate-100 dark:bg-slate-950">Action</th>
@@ -263,7 +261,6 @@ export default function Dashboard() {
                       </td>
                       <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-medium text-xs">{p.pavement_alternative || '-'}</td>
                       <td className="px-4 py-3 text-slate-700 dark:text-slate-200 font-semibold text-xs whitespace-nowrap">RM {p.cost_rm?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 text-xs whitespace-nowrap">{p.maintenance_cost ? `RM ${p.maintenance_cost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '-'}</td>
                       <td className="px-4 py-3 text-slate-600 dark:text-slate-300 text-xs">{p.distress_1_type || '-'}</td>
                       <td className="px-4 py-3 text-xs font-medium">
                         {p.is_recurring === 'Ya' ? (
