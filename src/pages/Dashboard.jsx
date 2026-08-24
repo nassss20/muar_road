@@ -379,13 +379,11 @@ export default function Dashboard() {
                       <td className="px-4 py-3 text-emerald-700 dark:text-emerald-400 font-mono font-semibold text-xs text-center">RM 1,023,616.00</td>
                       <td className="px-4 py-3 text-emerald-700 dark:text-emerald-400 font-mono font-semibold text-xs text-center">RM 1,005,199.68</td>
                     </tr>
-                    <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors bg-rose-500/5 dark:bg-rose-500/5">
-                      <td className="px-4 py-3 font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-700">
-                        LATEX <span className="inline-block mt-1 text-[10px] text-rose-600 dark:text-rose-400 font-normal bg-rose-500/10 px-1.5 py-0.5 rounded">*most uneconomical</span>
-                      </td>
-                      <td className="px-4 py-3 text-rose-700 dark:text-rose-400 font-mono font-semibold text-xs text-center">RM 1,161,471.46</td>
-                      <td className="px-4 py-3 text-rose-700 dark:text-rose-400 font-mono font-semibold text-xs text-center">RM 1,136,719.39</td>
-                      <td className="px-4 py-3 text-rose-700 dark:text-rose-400 font-mono font-semibold text-xs text-center">RM 1,115,038.44</td>
+                    <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                      <td className="px-4 py-3 font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-700">LATEX</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,161,471.46</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,136,719.39</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,115,038.44</td>
                     </tr>
                     <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                       <td className="px-4 py-3 font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-700">CMA</td>
@@ -393,11 +391,13 @@ export default function Dashboard() {
                       <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,081,995.58</td>
                       <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,065,997.80</td>
                     </tr>
-                    <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                      <td className="px-4 py-3 font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-700">AC</td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,286,460.54</td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,263,978.72</td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,244,379.77</td>
+                    <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors bg-rose-500/5 dark:bg-rose-500/5">
+                      <td className="px-4 py-3 font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-700">
+                        AC <span className="inline-block mt-1 text-[10px] text-rose-600 dark:text-rose-400 font-normal bg-rose-500/10 px-1.5 py-0.5 rounded">*most uneconomical</span>
+                      </td>
+                      <td className="px-4 py-3 text-rose-700 dark:text-rose-400 font-mono font-semibold text-xs text-center">RM 1,286,460.54</td>
+                      <td className="px-4 py-3 text-rose-700 dark:text-rose-400 font-mono font-semibold text-xs text-center">RM 1,263,978.72</td>
+                      <td className="px-4 py-3 text-rose-700 dark:text-rose-400 font-mono font-semibold text-xs text-center">RM 1,244,379.77</td>
                     </tr>
                   </tbody>
                 </table>
