@@ -401,9 +401,7 @@ export default function Dashboard() {
                     </tr>
                   </tbody>
                 </table>
-                <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 italic">
-                  * "most cost-effective" and "uneconomical" option chosen will remain the same even there are decreasing or increasing in total cost with different discount rate.
-                </p>
+
               </div>
             </div>
             </>
