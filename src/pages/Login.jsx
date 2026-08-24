@@ -32,7 +32,7 @@ export default function Login() {
         
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center mb-4">
-            <img src="/logo.png" alt="Logo" className="h-16 w-auto object-contain drop-shadow-md" />
+            <img src="/logo.png" alt="Logo" className="h-16 w-16 rounded-full object-cover drop-shadow-md shadow-sm" />
           </div>
           <h1 className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 via-teal-600 to-emerald-600 dark:from-cyan-400 dark:to-teal-400">
             PaveWise Portal
