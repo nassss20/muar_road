@@ -108,6 +108,8 @@ export default function Dashboard() {
         return 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/30';
       case 'LATEX':
         return 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/30';
+      case 'AC':
+        return 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/30';
       default:
         return 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30';
     }
@@ -149,7 +151,7 @@ export default function Dashboard() {
         </div>
         <div className="h-[550px] w-full relative">
           <iframe
-            src="https://www.arcgis.com/apps/dashboards/a39283d010a0452ca27094d5cd3caffa"
+            src="https://geouitm.maps.arcgis.com/apps/dashboards/a39283d010a0452ca27094d5cd3caffa#"
             width="100%"
             height="100%"
             style={{ border: 0 }}
@@ -213,6 +215,7 @@ export default function Dashboard() {
                 <option value="CMA">CMA</option>
                 <option value="CRMA">CRMA</option>
                 <option value="LATEX">LATEX</option>
+                <option value="AC">AC</option>
               </select>
             </div>
           )}
@@ -289,6 +292,7 @@ export default function Dashboard() {
               </tbody>
             </table>
           ) : (
+            <>
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-100/80 dark:bg-slate-950/80 border-b border-slate-200/80 dark:border-slate-800/80 text-[11px] uppercase text-slate-500 dark:text-slate-400 font-bold tracking-wider sticky top-0 z-10 shadow-sm backdrop-blur-md">
@@ -300,7 +304,7 @@ export default function Dashboard() {
                   <th className="px-4 py-3.5">NPV Cost (4%)</th>
                   <th className="px-4 py-3.5">Distress Level</th>
                   <th className="px-4 py-3.5">Recommendation</th>
-                  <th className="px-4 py-3.5 text-center">20-Yr Cashflow Schedule</th>
+                  <th className="px-4 py-3.5 text-center">20-Year Maintenance Schedule</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200/60 dark:divide-slate-800/60 text-sm">
@@ -343,6 +347,66 @@ export default function Dashboard() {
                 )}
               </tbody>
             </table>
+
+            {/* Sensitivity Analysis Section */}
+            <div className="mt-8 border-t border-slate-200/80 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 p-6">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <Sparkles size={18} className="text-cyan-500" />
+                Sensitivity Analysis (NPV)
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse bg-white dark:bg-slate-900 rounded-xl shadow-sm overflow-hidden border border-slate-200 dark:border-slate-800">
+                  <thead>
+                    <tr className="bg-slate-100/80 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-[11px] uppercase text-slate-500 dark:text-slate-400 font-bold tracking-wider">
+                      <th className="px-4 py-3.5 border-r border-slate-200 dark:border-slate-700">Asphalt Mix Alternatives</th>
+                      <th className="px-4 py-3.5 text-center bg-blue-500/10 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300">NPV (3%)</th>
+                      <th className="px-4 py-3.5 text-center bg-cyan-500/10 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300">NPV (4%)</th>
+                      <th className="px-4 py-3.5 text-center bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">NPV (5%)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200/60 dark:divide-slate-800/60 text-sm">
+                    <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                      <td className="px-4 py-3 font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-700">SFM</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,086,399.27</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,070,914.94</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,057,815.89</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors bg-emerald-500/5 dark:bg-emerald-500/5">
+                      <td className="px-4 py-3 font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-700">
+                        CRMA <span className="inline-block mt-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-normal bg-emerald-500/10 px-1.5 py-0.5 rounded">*most cost-effective</span>
+                      </td>
+                      <td className="px-4 py-3 text-emerald-700 dark:text-emerald-400 font-mono font-semibold text-xs text-center">RM 1,031,307.60</td>
+                      <td className="px-4 py-3 text-emerald-700 dark:text-emerald-400 font-mono font-semibold text-xs text-center">RM 1,023,616.00</td>
+                      <td className="px-4 py-3 text-emerald-700 dark:text-emerald-400 font-mono font-semibold text-xs text-center">RM 1,005,199.68</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors bg-rose-500/5 dark:bg-rose-500/5">
+                      <td className="px-4 py-3 font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-700">
+                        LATEX <span className="inline-block mt-1 text-[10px] text-rose-600 dark:text-rose-400 font-normal bg-rose-500/10 px-1.5 py-0.5 rounded">*most uneconomical</span>
+                      </td>
+                      <td className="px-4 py-3 text-rose-700 dark:text-rose-400 font-mono font-semibold text-xs text-center">RM 1,161,471.46</td>
+                      <td className="px-4 py-3 text-rose-700 dark:text-rose-400 font-mono font-semibold text-xs text-center">RM 1,136,719.39</td>
+                      <td className="px-4 py-3 text-rose-700 dark:text-rose-400 font-mono font-semibold text-xs text-center">RM 1,115,038.44</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                      <td className="px-4 py-3 font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-700">CMA</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,099,957.04</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,081,995.58</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,065,997.80</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                      <td className="px-4 py-3 font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-700">AC</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,286,460.54</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,263,978.72</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs text-center">RM 1,244,379.77</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 italic">
+                  * "most cost-effective" and "uneconomical" option chosen will remain the same even there are decreasing or increasing in total cost with different discount rate.
+                </p>
+              </div>
+            </div>
+            </>
           )}
         </div>
       </div>

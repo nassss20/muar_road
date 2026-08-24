@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { X, Calendar, DollarSign, TrendingUp, Layers, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
+import AiLifespanPredictor from './AiLifespanPredictor';
 
 const LCCA_SCHEDULE_DATA = {
   CRMA: {
     title: "CRMA - Crumb Rubber Modified Asphalt",
     avgInitialCost: 933329.19,
-    avgMaintenanceCost: 167999.25,
-    avgNpv: 1023616.00,
+    avgMaintenanceCost: 167999.00,
+    avgNpv: 1035452.95,
     costRatio: 0.18,
-    distressLevel: "Moderate",
+    distressLevel: "No damage",
     ranking: 1,
     badgeColor: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30",
     assets: [
@@ -18,11 +19,11 @@ const LCCA_SCHEDULE_DATA = {
         maintCost: 179997.76,
         npv: 1094297.55,
         schedule: [
-          { year: "2021", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 999987.58, rate: "4%", n: 0, pf: 1.0000, npv: 999987.58 },
+          { year: "2021", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 999987.58, rate: "4%", n: "0", pf: 1.0000, npv: 999987.58 },
           { year: "2022 - 2028", activity: "No Maintenance required", assumed: "-", cost: 0.00, rate: "4%", n: "3-9", pf: 0.0000, npv: 0.00 },
-          { year: "2029", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 29999.63, rate: "4%", n: 10, pf: 0.6756, npv: 20266.67 },
+          { year: "2029", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 29999.63, rate: "4%", n: "10", pf: 0.6756, npv: 20266.67 },
           { year: "2030 - 2036", activity: "No Major Maintenance", assumed: "-", cost: 0.00, rate: "4%", n: "11-17", pf: 0.0000, npv: 0.00 },
-          { year: "2037", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 149998.14, rate: "4%", n: 18, pf: 0.4936, npv: 74043.30 },
+          { year: "2037", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 149998.14, rate: "4%", n: "18", pf: 0.4936, npv: 74043.30 },
           { year: "2038 - 2041", activity: "Routine Monitoring Only", assumed: "-", cost: 0.00, rate: "4%", n: "19-22", pf: 0.0000, npv: 0.00 },
         ]
       },
@@ -32,11 +33,11 @@ const LCCA_SCHEDULE_DATA = {
         maintCost: 180000.00,
         npv: 1098083.59,
         schedule: [
-          { year: "2020", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 1000000.00, rate: "4%", n: 0, pf: 1.0000, npv: 1000000.00 },
+          { year: "2020", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 1000000.00, rate: "4%", n: "0", pf: 1.0000, npv: 1000000.00 },
           { year: "2021 - 2027", activity: "No Maintenance required", assumed: "-", cost: 0.00, rate: "4%", n: "2-8", pf: 0.0000, npv: 0.00 },
-          { year: "2028", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: 9, pf: 0.7026, npv: 21077.60 },
+          { year: "2028", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: "9", pf: 0.7026, npv: 21077.60 },
           { year: "2029 - 2035", activity: "No Major Maintenance", assumed: "-", cost: 0.00, rate: "4%", n: "10-16", pf: 0.0000, npv: 0.00 },
-          { year: "2036", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 150000.00, rate: "4%", n: 17, pf: 0.5134, npv: 77005.99 },
+          { year: "2036", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 150000.00, rate: "4%", n: "17", pf: 0.5134, npv: 77005.99 },
           { year: "2037 - 2040", activity: "Routine Monitoring Only", assumed: "-", cost: 0.00, rate: "4%", n: "18-21", pf: 0.0000, npv: 0.00 },
         ]
       },
@@ -46,24 +47,23 @@ const LCCA_SCHEDULE_DATA = {
         maintCost: 144000.00,
         npv: 878466.87,
         schedule: [
-          { year: "2020", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 800000.00, rate: "4%", n: 0, pf: 1.0000, npv: 800000.00 },
+          { year: "2020", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 800000.00, rate: "4%", n: "0", pf: 1.0000, npv: 800000.00 },
           { year: "2021 - 2027", activity: "No Maintenance required", assumed: "-", cost: 0.00, rate: "4%", n: "2-8", pf: 0.0000, npv: 0.00 },
-          { year: "2028", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 24000.00, rate: "4%", n: 9, pf: 0.7026, npv: 16862.08 },
+          { year: "2028", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 24000.00, rate: "4%", n: "9", pf: 0.7026, npv: 16862.08 },
           { year: "2029 - 2035", activity: "No Major Maintenance", assumed: "-", cost: 0.00, rate: "4%", n: "10-16", pf: 0.0000, npv: 0.00 },
-          { year: "2036", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 120000.00, rate: "4%", n: 17, pf: 0.5134, npv: 61604.79 },
+          { year: "2036", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 120000.00, rate: "4%", n: "17", pf: 0.5134, npv: 61604.79 },
           { year: "2037 - 2040", activity: "Routine Monitoring Only", assumed: "-", cost: 0.00, rate: "4%", n: "18-21", pf: 0.0000, npv: 0.00 },
         ]
       }
     ]
   },
-
   SFM: {
     title: "SFM - Stone Fiber Modified Asphalt",
     avgInitialCost: 976666.67,
     avgMaintenanceCost: 175800.00,
     avgNpv: 1070914.94,
     costRatio: 0.18,
-    distressLevel: "Moderate",
+    distressLevel: "No damage",
     ranking: 2,
     badgeColor: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30",
     assets: [
@@ -73,52 +73,51 @@ const LCCA_SCHEDULE_DATA = {
         maintCost: 221400.00,
         npv: 1346002.71,
         schedule: [
-          { year: "2021", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 1230000.00, rate: "4%", n: 0, pf: 1.0000, npv: 1230000.00 },
+          { year: "2021", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 1230000.00, rate: "4%", n: "0", pf: 1.0000, npv: 1230000.00 },
           { year: "2021 - 2027", activity: "No Maintenance required", assumed: "-", cost: 0.00, rate: "4%", n: "3-9", pf: 0.0000, npv: 0.00 },
-          { year: "2028", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 36900.00, rate: "4%", n: 10, pf: 0.6756, npv: 24928.32 },
+          { year: "2028", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 36900.00, rate: "4%", n: "10", pf: 0.6756, npv: 24928.32 },
           { year: "2029 - 2036", activity: "No Major Maintenance", assumed: "-", cost: 0.00, rate: "4%", n: "11-17", pf: 0.0000, npv: 0.00 },
-          { year: "2037", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 184500.00, rate: "4%", n: 18, pf: 0.4936, npv: 91074.39 },
+          { year: "2037", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 184500.00, rate: "4%", n: "18", pf: 0.4936, npv: 91074.39 },
           { year: "2038 - 2041", activity: "Routine Monitoring Only", assumed: "-", cost: 0.00, rate: "4%", n: "19-22", pf: 0.0000, npv: 0.00 },
         ]
       },
       {
-        name: "Muar By Pass, FT0224 (3-4)",
+        name: "Muar By Pass, FT0224 - (3-4)",
         initialCost: 1000000.00,
         maintCost: 180000.00,
         npv: 1098083.59,
         schedule: [
-          { year: "2020", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 1000000.00, rate: "4%", n: 0, pf: 1.0000, npv: 1000000.00 },
+          { year: "2020", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 1000000.00, rate: "4%", n: "0", pf: 1.0000, npv: 1000000.00 },
           { year: "2020 - 2027", activity: "No Maintenance required", assumed: "-", cost: 0.00, rate: "4%", n: "2-8", pf: 0.0000, npv: 0.00 },
-          { year: "2028", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: 9, pf: 0.7026, npv: 21077.60 },
+          { year: "2028", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: "9", pf: 0.7026, npv: 21077.60 },
           { year: "2029 - 2036", activity: "No Major Maintenance", assumed: "-", cost: 0.00, rate: "4%", n: "10-16", pf: 0.0000, npv: 0.00 },
-          { year: "2037", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 150000.00, rate: "4%", n: 17, pf: 0.5134, npv: 77005.99 },
+          { year: "2037", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 150000.00, rate: "4%", n: "17", pf: 0.5134, npv: 77005.99 },
           { year: "2038 - 2040", activity: "Routine Monitoring Only", assumed: "-", cost: 0.00, rate: "4%", n: "18-21", pf: 0.0000, npv: 0.00 },
         ]
       },
       {
-        name: "Muar By Pass, FT0224 (5-6)",
+        name: "Muar By Pass, FT0224 - (5-6)",
         initialCost: 700000.00,
         maintCost: 126000.00,
         npv: 768658.51,
         schedule: [
-          { year: "2020", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 700000.00, rate: "4%", n: 0, pf: 1.0000, npv: 700000.00 },
+          { year: "2020", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 700000.00, rate: "4%", n: "0", pf: 1.0000, npv: 700000.00 },
           { year: "2020 - 2027", activity: "No Maintenance required", assumed: "-", cost: 0.00, rate: "4%", n: "2-8", pf: 0.0000, npv: 0.00 },
-          { year: "2028", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 21000.00, rate: "4%", n: 9, pf: 0.7026, npv: 14754.32 },
+          { year: "2028", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 21000.00, rate: "4%", n: "9", pf: 0.7026, npv: 14754.32 },
           { year: "2029 - 2036", activity: "No Major Maintenance", assumed: "-", cost: 0.00, rate: "4%", n: "10-16", pf: 0.0000, npv: 0.00 },
-          { year: "2037", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 105000.00, rate: "4%", n: 17, pf: 0.5134, npv: 53904.19 },
+          { year: "2037", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 105000.00, rate: "4%", n: "17", pf: 0.5134, npv: 53904.19 },
           { year: "2038 - 2040", activity: "Routine Monitoring Only", assumed: "-", cost: 0.00, rate: "4%", n: "18-21", pf: 0.0000, npv: 0.00 },
         ]
       }
     ]
   },
-
   CMA: {
     title: "CMA - Crumb Modified Asphalt",
     avgInitialCost: 900000.00,
     avgMaintenanceCost: 287333.33,
     avgNpv: 1081995.58,
     costRatio: 0.32,
-    distressLevel: "No damage",
+    distressLevel: "Recurring pothole & crack",
     ranking: 3,
     badgeColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30",
     assets: [
@@ -128,13 +127,13 @@ const LCCA_SCHEDULE_DATA = {
         maintCost: 210000.00,
         npv: 1135955.42,
         schedule: [
-          { year: "2019", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 1000000.00, rate: "4%", n: 0, pf: 1.0000, npv: 1000000.00 },
+          { year: "2019", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 1000000.00, rate: "4%", n: "0", pf: 1.0000, npv: 1000000.00 },
           { year: "2020 - 2024", activity: "No Maintenance required", assumed: "-", cost: 0.00, rate: "4%", n: "1-5", pf: 0.0000, npv: 0.00 },
-          { year: "2025", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: 6, pf: 0.7903, npv: 23709.44 },
+          { year: "2025", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: "6", pf: 0.7903, npv: 23709.44 },
           { year: "2026 - 2029", activity: "No Major Maintenance", assumed: "-", cost: 0.00, rate: "4%", n: "7-10", pf: 0.0000, npv: 0.00 },
-          { year: "2030", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 150000.00, rate: "4%", n: 11, pf: 0.6496, npv: 97437.14 },
+          { year: "2030", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 150000.00, rate: "4%", n: "11", pf: 0.6496, npv: 97437.14 },
           { year: "2031 - 2036", activity: "Routine Monitoring Only", assumed: "-", cost: 0.00, rate: "4%", n: "12-17", pf: 0.0000, npv: 0.00 },
-          { year: "2037", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: 18, pf: 0.4936, npv: 14808.84 },
+          { year: "2037", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: "18", pf: 0.4936, npv: 14808.84 },
           { year: "2038 - 2039", activity: "No Major Maintenance", assumed: "-", cost: 0.00, rate: "4%", n: "19-20", pf: 0.0000, npv: 0.00 },
         ]
       },
@@ -144,13 +143,13 @@ const LCCA_SCHEDULE_DATA = {
         maintCost: 178500.00,
         npv: 965562.16,
         schedule: [
-          { year: "2019", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 850000.00, rate: "4%", n: 0, pf: 1.0000, npv: 850000.00 },
+          { year: "2019", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 850000.00, rate: "4%", n: "0", pf: 1.0000, npv: 850000.00 },
           { year: "2020 - 2024", activity: "No Maintenance required", assumed: "-", cost: 0.00, rate: "4%", n: "1-5", pf: 0.0000, npv: 0.00 },
-          { year: "2025", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 25500.00, rate: "4%", n: 6, pf: 0.7903, npv: 20153.02 },
+          { year: "2025", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 25500.00, rate: "4%", n: "6", pf: 0.7903, npv: 20153.02 },
           { year: "2026 - 2029", activity: "No Major Maintenance", assumed: "-", cost: 0.00, rate: "4%", n: "7-10", pf: 0.0000, npv: 0.00 },
-          { year: "2030", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 127500.00, rate: "4%", n: 11, pf: 0.6496, npv: 82821.57 },
+          { year: "2030", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 127500.00, rate: "4%", n: "11", pf: 0.6496, npv: 82821.57 },
           { year: "2031 - 2036", activity: "Routine Monitoring Only", assumed: "-", cost: 0.00, rate: "4%", n: "12-17", pf: 0.0000, npv: 0.00 },
-          { year: "2037", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 25500.00, rate: "4%", n: 18, pf: 0.4936, npv: 12587.52 },
+          { year: "2037", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 25500.00, rate: "4%", n: "18", pf: 0.4936, npv: 12587.52 },
           { year: "2038 - 2039", activity: "No Major Maintenance", assumed: "-", cost: 0.00, rate: "4%", n: "19-20", pf: 0.0000, npv: 0.00 },
         ]
       },
@@ -160,26 +159,29 @@ const LCCA_SCHEDULE_DATA = {
         maintCost: 473500.00,
         npv: 1144469.17,
         schedule: [
-          { year: "2019", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 850000.00, rate: "4%", n: 0, pf: 1.0000, npv: 850000.00 },
-          { year: "2020", activity: "Patching", assumed: "Actual Maintenance Cost (4 month)", cost: 2000.00, rate: "4%", n: 2, pf: 0.9246, npv: 1849.11 },
-          { year: "2021", activity: "Patching", assumed: "Actual Maintenance Cost (4 month)", cost: 2000.00, rate: "4%", n: 3, pf: 0.8890, npv: 1777.99 },
-          { year: "2022", activity: "Patching", assumed: "Actual Maintenance Cost (4 month)", cost: 2000.00, rate: "4%", n: 4, pf: 0.8548, npv: 1709.61 },
-          { year: "2023", activity: "Corrective Maintenance", assumed: "10% of initial cost", cost: 85000.00, rate: "4%", n: 5, pf: 0.8219, npv: 69863.80 },
-          { year: "2027", activity: "Periodic Maintenance", assumed: "25% of initial cost", cost: 212500.00, rate: "4%", n: 8, pf: 0.7307, npv: 155271.67 },
-          { year: "2032", activity: "Corrective Maintenance", assumed: "10% of initial cost", cost: 85000.00, rate: "4%", n: 13, pf: 0.6006, npv: 51048.80 },
-          { year: "2038", activity: "Periodic Maintenance", assumed: "10% of initial cost", cost: 85000.00, rate: "4%", n: 19, pf: 0.4746, npv: 40344.61 },
+          { year: "2019", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 850000.00, rate: "4%", n: "0", pf: 1.0000, npv: 850000.00 },
+          { year: "2020", activity: "Patching", assumed: "Actual Maintenance Cost (4 month)", cost: 2000.00, rate: "4%", n: "2", pf: 0.9246, npv: 1849.11 },
+          { year: "2021", activity: "Patching", assumed: "Actual Maintenance Cost (4 month)", cost: 2000.00, rate: "4%", n: "3", pf: 0.8890, npv: 1777.99 },
+          { year: "2022", activity: "Patching", assumed: "Actual Maintenance Cost (4 month)", cost: 2000.00, rate: "4%", n: "4", pf: 0.8548, npv: 1709.61 },
+          { year: "2023", activity: "Corrective Maintenance", assumed: "10% of initial cost", cost: 85000.00, rate: "4%", n: "5", pf: 0.8219, npv: 69863.80 },
+          { year: "2023 - 2026", activity: "No Major Maintenance", assumed: "-", cost: 0.00, rate: "4%", n: "6-7", pf: 0.0000, npv: 0.00 },
+          { year: "2027", activity: "Periodic Maintenance", assumed: "25% of initial cost", cost: 212500.00, rate: "4%", n: "8", pf: 0.7307, npv: 155271.67 },
+          { year: "2028 - 2031", activity: "Routine Monitoring Only", assumed: "-", cost: 0.00, rate: "4%", n: "8-12", pf: 0.0000, npv: 0.00 },
+          { year: "2032", activity: "Corrective Maintenance", assumed: "10% of initial cost", cost: 85000.00, rate: "4%", n: "13", pf: 0.6006, npv: 51048.80 },
+          { year: "2033 - 2037", activity: "Routine Monitoring Only", assumed: "-", cost: 0.00, rate: "4%", n: "14-18", pf: 0.0000, npv: 0.00 },
+          { year: "2038", activity: "Periodic Maintenance", assumed: "10% of initial cost", cost: 85000.00, rate: "4%", n: "19", pf: 0.4746, npv: 40344.61 },
+          { year: "2039", activity: "Routine Monitoring Only", assumed: "-", cost: 0.00, rate: "4%", n: "20", pf: 0.0000, npv: 0.00 },
         ]
       }
     ]
   },
-
   LATEX: {
     title: "LATEX - Polymer Latex Modified Asphalt",
     avgInitialCost: 879992.39,
     avgMaintenanceCost: 433528.54,
-    avgNpv: 1136919.39,
+    avgNpv: 1136719.39,
     costRatio: 0.49,
-    distressLevel: "Recurring pothole & crack",
+    distressLevel: "Recurring shoving + monthly patch",
     ranking: 4,
     badgeColor: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30",
     assets: [
@@ -189,12 +191,17 @@ const LCCA_SCHEDULE_DATA = {
         maintCost: 571985.62,
         npv: 1305297.97,
         schedule: [
-          { year: "2022", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 899977.18, rate: "4%", n: 0, pf: 1.0000, npv: 899977.18 },
-          { year: "2022", activity: "Patching (Shoving appeared)", assumed: "Actual Maintenance Cost (10 month)", cost: 5000.00, rate: "4%", n: 4, pf: 0.8548, npv: 4274.02 },
-          { year: "2024", activity: "Major Rehabilitation", assumed: "35% Initial Cost", cost: 314992.01, rate: "4%", n: 6, pf: 0.7903, npv: 248942.76 },
-          { year: "2028", activity: "Corrective Maintenance", assumed: "10% Initial Cost", cost: 89997.72, rate: "4%", n: 10, pf: 0.6756, npv: 60799.23 },
-          { year: "2033", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 134996.58, rate: "4%", n: 14, pf: 0.5775, npv: 77957.16 },
-          { year: "2038", activity: "Preventive Maintenance", assumed: "3% Initial Cost", cost: 26999.32, rate: "4%", n: 18, pf: 0.4936, npv: 13327.62 },
+          { year: "2022", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 899977.18, rate: "4%", n: "0", pf: 1.0000, npv: 899977.18 },
+          { year: "2022", activity: "Patching", assumed: "Actual Maintenance Cost (10 month)", cost: 5000.00, rate: "4%", n: "4", pf: 0.8548, npv: 4274.02 },
+          { year: "2022 - 2023", activity: "Shoving appeared", assumed: "-", cost: 0.00, rate: "4%", n: "4-5", pf: 0.0000, npv: 0.00 },
+          { year: "2024", activity: "Major Rehabilitation", assumed: "35% Initial Cost", cost: 314992.01, rate: "4%", n: "6", pf: 0.7903, npv: 248942.76 },
+          { year: "2025 - 2027", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "7-9", pf: 0.0000, npv: 0.00 },
+          { year: "2028", activity: "Corrective Maintenance", assumed: "10% Initial Cost", cost: 89997.72, rate: "4%", n: "10", pf: 0.6756, npv: 60799.23 },
+          { year: "2029 - 2032", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "11-13", pf: 0.0000, npv: 0.00 },
+          { year: "2033", activity: "Periodic Maintenance", assumed: "15% of initial cost", cost: 134996.58, rate: "4%", n: "14", pf: 0.5775, npv: 77957.16 },
+          { year: "2034 - 2037", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "15-17", pf: 0.0000, npv: 0.00 },
+          { year: "2038", activity: "Preventive Maintenance", assumed: "3% Initial Cost", cost: 26999.32, rate: "4%", n: "18", pf: 0.4936, npv: 13327.62 },
+          { year: "2039 - 2042", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "19-23", pf: 0.0000, npv: 0.00 },
         ]
       },
       {
@@ -203,11 +210,16 @@ const LCCA_SCHEDULE_DATA = {
         maintCost: 374100.00,
         npv: 1117011.93,
         schedule: [
-          { year: "2021", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 870000.00, rate: "4%", n: 0, pf: 1.0000, npv: 870000.00 },
-          { year: "2023", activity: "Corrective Maintenance", assumed: "10% of initial cost", cost: 87000.00, rate: "4%", n: 5, pf: 0.8219, npv: 71507.66 },
-          { year: "2026", activity: "Corrective Maintenance", assumed: "10% of initial cost", cost: 87000.00, rate: "4%", n: 8, pf: 0.7307, npv: 63570.05 },
-          { year: "2033", activity: "Periodic Maintenance", assumed: "20% of initial cost", cost: 174000.00, rate: "4%", n: 14, pf: 0.5775, npv: 100480.66 },
-          { year: "2040", activity: "Preventive Maintenance", assumed: "3% of Initial cost", cost: 26100.00, rate: "4%", n: 21, pf: 0.4388, npv: 11453.56 },
+          { year: "2021", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 870000.00, rate: "4%", n: "0", pf: 1.0000, npv: 870000.00 },
+          { year: "2021 - 2022", activity: "Minor Distressed Observed", assumed: "-", cost: 0.00, rate: "4%", n: "3-4", pf: 0.0000, npv: 0.00 },
+          { year: "2023", activity: "Corrective Maintenance", assumed: "10% of initial cost", cost: 87000.00, rate: "4%", n: "5", pf: 0.8219, npv: 71507.66 },
+          { year: "2024 - 2025", activity: "Minor Distressed Observed", assumed: "-", cost: 0.00, rate: "4%", n: "6-7", pf: 0.0000, npv: 0.00 },
+          { year: "2026", activity: "Corrective Maintenance", assumed: "10% of initial cost", cost: 87000.00, rate: "4%", n: "8", pf: 0.7307, npv: 63570.05 },
+          { year: "2028 - 2032", activity: "No Major Maintenance", assumed: "-", cost: 0.00, rate: "4%", n: "9-13", pf: 0.0000, npv: 0.00 },
+          { year: "2033", activity: "Periodic Maintenance", assumed: "20% of initial cost", cost: 174000.00, rate: "4%", n: "14", pf: 0.5775, npv: 100480.66 },
+          { year: "2034 - 2039", activity: "No Major Intervention", assumed: "-", cost: 0.00, rate: "4%", n: "15-20", pf: 0.0000, npv: 0.00 },
+          { year: "2040", activity: "Preventive Maintenance", assumed: "3% of initial cost", cost: 26100.00, rate: "4%", n: "21", pf: 0.4388, npv: 11453.56 },
+          { year: "2041", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "22", pf: 0.4220, npv: 0.00 },
         ]
       },
       {
@@ -216,13 +228,91 @@ const LCCA_SCHEDULE_DATA = {
         maintCost: 354500.00,
         npv: 988448.26,
         schedule: [
-          { year: "2021", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 870000.00, rate: "4%", n: 0, pf: 1.0000, npv: 870000.00 },
-          { year: "2023", activity: "Patching", assumed: "Actual Maintenance Cost (3 month)", cost: 1500.00, rate: "4%", n: 5, pf: 0.8219, npv: 1232.89 },
-          { year: "2024", activity: "Patching", assumed: "Actual Maintenance Cost (4 month)", cost: 2000.00, rate: "4%", n: 6, pf: 0.7903, npv: 1580.63 },
-          { year: "2025", activity: "Patching", assumed: "Actual Maintenance Cost (6 month)", cost: 3000.00, rate: "4%", n: 7, pf: 0.7599, npv: 2279.75 },
-          { year: "2027", activity: "Corrective Maintenance", assumed: "10% of initial cost", cost: 87000.00, rate: "4%", n: 9, pf: 0.7026, npv: 61125.05 },
-          { year: "2030", activity: "Corrective Maintenance", assumed: "10% of initial cost", cost: 87000.00, rate: "4%", n: 13, pf: 0.6006, npv: 52249.95 },
-          { year: "2036", activity: "Periodic Maintenance", assumed: "20% of initial cost", cost: 174000.00, rate: "4%", n: 18, pf: 0.4936, npv: 85891.29 },
+          { year: "2021", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 870000.00, rate: "4%", n: "0", pf: 1.0000, npv: 870000.00 },
+          { year: "2023", activity: "Patching", assumed: "Actual Maintenance Cost (3 month)", cost: 1500.00, rate: "4%", n: "5", pf: 0.8219, npv: 1232.89 },
+          { year: "2024", activity: "Patching", assumed: "Actual Maintenance Cost (4 month)", cost: 2000.00, rate: "4%", n: "6", pf: 0.7903, npv: 1580.63 },
+          { year: "2025", activity: "Patching", assumed: "Actual Maintenance Cost (6 month)", cost: 3000.00, rate: "4%", n: "7", pf: 0.7599, npv: 2279.75 },
+          { year: "2027", activity: "Corrective Maintenance", assumed: "10% of initial cost", cost: 87000.00, rate: "4%", n: "9", pf: 0.7026, npv: 61125.05 },
+          { year: "2028 - 2030", activity: "No Major Maintenance", assumed: "-", cost: 0.00, rate: "4%", n: "10-12", pf: 0.0000, npv: 0.00 },
+          { year: "2030", activity: "Corrective Maintenance", assumed: "10% of initial cost", cost: 87000.00, rate: "4%", n: "13", pf: 0.6006, npv: 52249.95 },
+          { year: "2031 - 2035", activity: "Routine Monitoring Only", assumed: "-", cost: 0.00, rate: "4%", n: "14-17", pf: 0.0000, npv: 0.00 },
+          { year: "2036", activity: "Periodic Maintenance", assumed: "20% of initial cost", cost: 174000.00, rate: "4%", n: "18", pf: 0.4936, npv: 85891.29 },
+          { year: "2037 - 2041", activity: "Routine Monitoring Only", assumed: "-", cost: 0.00, rate: "4%", n: "19-22", pf: 0.0000, npv: 0.00 },
+        ]
+      }
+    ]
+  },
+  AC: {
+    title: "AC",
+    avgInitialCost: 1066666.67,
+    avgMaintenanceCost: 320000.00,
+    avgNpv: 1263978.72,
+    costRatio: 0.30,
+    distressLevel: "Recurring pothole & crack",
+    ranking: 5,
+    badgeColor: "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/30",
+    assets: [
+      {
+        name: "Yong-Peng, FT0024 Muar (45-46)",
+        initialCost: 1000000.00,
+        maintCost: 270000.00,
+        npv: 1198425.49,
+        schedule: [
+          { year: "2018", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 1000000.00, rate: "4%", n: "0", pf: 1.0000, npv: 1000000.00 },
+          { year: "2019 - 2020", activity: "No Major Maintenance", assumed: "-", cost: 0.00, rate: "4%", n: "1-3", pf: 0.0000, npv: 0.00 },
+          { year: "2021", activity: "Corrective Patching for Localized Potholes", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: "4", pf: 0.8548, npv: 25644.13 },
+          { year: "2022 - 2023", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "5-6", pf: 0.0000, npv: 0.00 },
+          { year: "2024", activity: "Corrective Patching for Recurring Localized Defects", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: "7", pf: 0.7599, npv: 22797.53 },
+          { year: "2025", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "8", pf: 0.0000, npv: 0.00 },
+          { year: "2026", activity: "Corrective Patching", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: "9", pf: 0.7026, npv: 21077.60 },
+          { year: "2027 - 2029", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "10-12", pf: 0.0000, npv: 0.00 },
+          { year: "2030", activity: "Preventive Maintenance / Crack Treatment", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: "13", pf: 0.6006, npv: 18017.22 },
+          { year: "2031 - 2032", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "14-15", pf: 0.0000, npv: 0.00 },
+          { year: "2033", activity: "Periodic Maintenance - Milling & Overlay", assumed: "15% of initial cost", cost: 150000.00, rate: "4%", n: "16", pf: 0.5339, npv: 80086.23 },
+          { year: "2034 - 2037", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "17-20", pf: 0.0000, npv: 0.00 },
+        ]
+      },
+      {
+        name: "Yong-Peng, FT0024 Muar (46-47)",
+        initialCost: 1000000.00,
+        maintCost: 300000.00,
+        npv: 1224278.41,
+        schedule: [
+          { year: "2018", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 1000000.00, rate: "4%", n: "0", pf: 1.0000, npv: 1000000.00 },
+          { year: "2019", activity: "No Major Maintenance", assumed: "-", cost: 0.00, rate: "4%", n: "1-2", pf: 0.0000, npv: 0.00 },
+          { year: "2020", activity: "Corrective Patching for Localized Potholes", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: "3", pf: 0.8890, npv: 26669.89 },
+          { year: "2021 - 2022", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "4-5", pf: 0.0000, npv: 0.00 },
+          { year: "2023", activity: "Corrective Patching for Recurring Localized Defects", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: "6", pf: 0.7903, npv: 23709.44 },
+          { year: "2024", activity: "Corrective Patching - Localized Pavement Defects", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: "7", pf: 0.7599, npv: 22797.53 },
+          { year: "2025", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "8", pf: 0.0000, npv: 0.00 },
+          { year: "2026", activity: "Corrective Patching - Recurring Defects", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: "9", pf: 0.7026, npv: 21077.60 },
+          { year: "2027 - 2029", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "10-12", pf: 0.0000, npv: 0.00 },
+          { year: "2030", activity: "Preventive Maintenance - Crack/Surface Treatment", assumed: "3% of initial cost", cost: 30000.00, rate: "4%", n: "13", pf: 0.6006, npv: 18017.22 },
+          { year: "2031 - 2032", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "14-15", pf: 0.0000, npv: 0.00 },
+          { year: "2033", activity: "Periodic Maintenance - Milling & Overlay", assumed: "15% of initial cost", cost: 150000.00, rate: "4%", n: "16", pf: 0.5339, npv: 80086.23 },
+          { year: "2034 - 2037", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "17-20", pf: 0.0000, npv: 0.00 },
+        ]
+      },
+      {
+        name: "Muar By Pass, FT0224 (2-3)",
+        initialCost: 1200000.00,
+        maintCost: 396000.00,
+        npv: 1396232.26,
+        schedule: [
+          { year: "2018", activity: "Initial Construction", assumed: "Actual Construction Cost", cost: 1200000.00, rate: "4%", n: "0", pf: 1.0000, npv: 1200000.00 },
+          { year: "2019", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "2", pf: 0.9246, npv: 0.00 },
+          { year: "2020", activity: "Corrective Patching - Localized Potholes/Surface D", assumed: "3% of initial cost", cost: 36000.00, rate: "4%", n: "3", pf: 0.8890, npv: 32003.87 },
+          { year: "2021", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "4", pf: 0.8548, npv: 0.00 },
+          { year: "2022", activity: "Corrective Patching - Recurring Localized Defects", assumed: "3% of initial cost", cost: 36000.00, rate: "4%", n: "5", pf: 0.8219, npv: 29589.38 },
+          { year: "2023", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "6", pf: 0.0000, npv: 0.00 },
+          { year: "2024", activity: "Corrective Patching - Localized Pavement Defects", assumed: "3% of initial cost", cost: 36000.00, rate: "4%", n: "7", pf: 0.7599, npv: 27357.04 },
+          { year: "2025", activity: "Routine Monitoring Only", assumed: "-", cost: 0.00, rate: "4%", n: "8", pf: 0.0000, npv: 0.00 },
+          { year: "2026", activity: "Corrective Patching - Recurring Pothole/Patched A", assumed: "3% of initial cost", cost: 36000.00, rate: "4%", n: "9", pf: 0.7026, npv: 25293.12 },
+          { year: "2027 - 2028", activity: "Routine Monitoring Only", assumed: "-", cost: 0.00, rate: "4%", n: "10-11", pf: 0.0000, npv: 0.00 },
+          { year: "2029", activity: "Preventive Maintenance - Crack/SURFACE Treatm", assumed: "3% of initial cost", cost: 36000.00, rate: "4%", n: "12", pf: 0.6246, npv: 22485.49 },
+          { year: "2030 - 2032", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "13-15", pf: 0.0000, npv: 0.00 },
+          { year: "2033", activity: "Periodic Maintenance - Milling & Overlay", assumed: "15% of initial cost", cost: 180000.00, rate: "4%", n: "16", pf: 0.5339, npv: 96103.47 },
+          { year: "2034 - 2037", activity: "Routine Monitoring", assumed: "-", cost: 0.00, rate: "4%", n: "17-20", pf: 0.0000, npv: 0.00 },
         ]
       }
     ]
@@ -294,6 +384,8 @@ export default function LccaDetailModal({ isOpen, onClose, alternativeKey }) {
               </p>
             </div>
           </div>
+
+          <AiLifespanPredictor materialName={data.title} scheduleData={currentAsset.schedule} />
 
           {/* Asset Selector Tabs */}
           <div>

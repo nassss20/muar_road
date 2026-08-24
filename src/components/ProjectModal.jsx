@@ -18,7 +18,8 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
     is_recurring: 'Tidak',
     work_description: '',
     latitude: '',
-    longitude: ''
+    longitude: '',
+    remarks: ''
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,7 +41,8 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
         is_recurring: project.is_recurring || 'Tidak',
         work_description: project.work_description || '',
         latitude: project.latitude || '',
-        longitude: project.longitude || ''
+        longitude: project.longitude || '',
+        remarks: project.remarks || ''
       });
     } else {
       setFormData({
@@ -57,7 +59,8 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
         is_recurring: 'Tidak',
         work_description: '',
         latitude: '',
-        longitude: ''
+        longitude: '',
+        remarks: ''
       });
     }
   }, [project, isOpen]);
@@ -145,6 +148,7 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
                 <option value="CMA">CMA</option>
                 <option value="CRMA">CRMA</option>
                 <option value="LATEX">LATEX</option>
+                <option value="AC">AC</option>
               </select>
             </div>
             <div>
@@ -199,6 +203,19 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Longitude (Optional overrides)</label>
               <input type="number" step="0.00000001" name="longitude" value={formData.longitude} onChange={handleChange} placeholder="e.g. 102.5888" className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" />
+            </div>
+            <div className="md:col-span-2 space-y-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                Remarks
+              </label>
+              <textarea
+                name="remarks"
+                rows={3}
+                value={formData.remarks}
+                onChange={handleChange}
+                placeholder="Enter remarks..."
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none resize-y min-h-[80px]"
+              />
             </div>
           </div>
           
