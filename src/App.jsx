@@ -40,7 +40,7 @@ function App() {
       {/* Navigation Bar */}
       {session && (
         <nav className="border-b border-slate-300 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl px-6 py-3.5 sticky top-0 z-50 shadow-md shadow-slate-900/10 animate-fade-in">
-          <div className="w-full max-w-[1400px] mx-auto flex items-center justify-between">
+          <div className="w-full max-w-[1150px] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="Logo" className="h-10 w-10 rounded-full object-cover shadow-sm" />
             <p className="font-bold text-xl tracking-tight leading-none text-slate-900 dark:text-white">
@@ -65,7 +65,7 @@ function App() {
       )}
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-8 relative z-10">
+      <main className="flex-1 w-full max-w-[1150px] mx-auto p-4 sm:p-6 lg:p-8 relative z-10">
         <Routes>
           <Route path="/" element={session ? <Navigate to="/dashboard" replace /> : <Login />} />
           <Route 
