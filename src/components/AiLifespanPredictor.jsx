@@ -83,9 +83,14 @@ export default function AiLifespanPredictor({ materialName, scheduleData }) {
             <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center shrink-0 mt-0.5">
               <Info size={16} className="text-indigo-600 dark:text-indigo-400" />
             </div>
-            <div className="flex-1 text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
-              {prediction}
-            </div>
+            <div 
+              className="flex-1 text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium"
+              dangerouslySetInnerHTML={{ 
+                __html: prediction
+                  .replace(/\*\*(.*?)\*\*/g, '<strong class="font-extrabold text-indigo-700 dark:text-indigo-300">$1</strong>')
+                  .replace(/\n/g, '<br/>')
+              }} 
+            />
           </div>
           <button 
             onClick={generatePrediction}
