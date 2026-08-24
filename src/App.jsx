@@ -39,7 +39,8 @@ function App() {
 
       {/* Navigation Bar */}
       {session && (
-        <nav className="border-b border-slate-300 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl px-6 py-3.5 flex items-center justify-between sticky top-0 z-50 shadow-md shadow-slate-900/10 animate-fade-in">
+        <nav className="border-b border-slate-300 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl px-6 py-3.5 sticky top-0 z-50 shadow-md shadow-slate-900/10 animate-fade-in">
+          <div className="w-full max-w-[1400px] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="Logo" className="h-10 w-10 rounded-full object-cover shadow-sm" />
             <p className="font-bold text-xl tracking-tight leading-none text-slate-900 dark:text-white">
@@ -58,6 +59,7 @@ function App() {
               <LogOut size={16} />
               <span className="hidden sm:inline">Log Out</span>
             </button>
+          </div>
           </div>
         </nav>
       )}
