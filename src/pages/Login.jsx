@@ -34,7 +34,7 @@ export default function Login() {
           <div className="inline-flex items-center justify-center mb-4">
             <img src="/logo.png" alt="Logo" className="h-16 w-16 rounded-full object-cover drop-shadow-md shadow-sm" />
           </div>
-          <h1 className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 via-teal-600 to-emerald-600 dark:from-cyan-400 dark:to-teal-400">
+          <h1 className="text-2xl font-extrabold text-cyan-600 dark:text-cyan-400">
             PaveWise Portal
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1.5 font-medium">Agency Infrastructure Access</p>
@@ -79,7 +79,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3.5 px-4 bg-gradient-to-r from-cyan-600 via-teal-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white font-semibold rounded-xl shadow-lg shadow-cyan-500/25 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed text-sm"
+            className="w-full py-3.5 px-4 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl shadow-lg shadow-cyan-500/25 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed text-sm"
           >
             {isSubmitting ? 'Authenticating...' : 'Secure Login'}
           </button>

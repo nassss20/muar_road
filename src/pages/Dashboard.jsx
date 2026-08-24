@@ -130,7 +130,7 @@ export default function Dashboard() {
         <button
           ref={headerBtnRef}
           onClick={handleAdd}
-          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-600 via-teal-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-cyan-500/25 border border-cyan-400/20 hover:scale-[1.02] active:scale-[0.98]"
+          className="flex items-center gap-2 px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-cyan-500/25 border border-cyan-400/20 hover:scale-[1.02] active:scale-[0.98]"
         >
           <Plus size={19} className="stroke-[2.5]" />
           Add New Road Record
@@ -430,7 +430,7 @@ export default function Dashboard() {
       {showFab && (
         <button
           onClick={handleAdd}
-          className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 flex items-center justify-center w-14 h-14 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white rounded-full shadow-2xl shadow-cyan-500/40 border border-cyan-400/30 transition-transform animate-fade-in hover:scale-105"
+          className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 flex items-center justify-center w-14 h-14 bg-cyan-500 hover:bg-cyan-600 text-white rounded-full shadow-2xl shadow-cyan-500/40 border border-cyan-400/30 transition-transform animate-fade-in hover:scale-105"
           title="Add New Record"
         >
           <Plus size={28} />

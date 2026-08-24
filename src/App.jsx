@@ -47,15 +47,6 @@ function App() {
             </p>
           </div>
           
-          <div className="flex gap-2 sm:gap-6 overflow-x-auto no-scrollbar">
-            <Link 
-              to="/dashboard" 
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all whitespace-nowrap text-sm font-medium ${location.pathname === '/dashboard' ? 'bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 font-semibold border border-cyan-200/60 dark:border-cyan-800/60 shadow-sm' : 'hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-600 dark:text-slate-400'}`}
-            >
-              <LayoutDashboard size={18} />
-              <span className="hidden sm:inline">Dashboard</span>
-            </Link>
-          </div>
           
           <div className="flex items-center gap-3">
             <ThemeSwitcher />

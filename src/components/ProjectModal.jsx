@@ -223,7 +223,7 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
             <button type="button" onClick={onClose} className="px-4 py-2.5 font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-sm">
               Cancel
             </button>
-            <button type="submit" disabled={isSubmitting} className="px-5 py-2.5 font-semibold text-white bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 rounded-xl transition-all shadow-md shadow-cyan-500/20 disabled:opacity-70 text-sm">
+            <button type="submit" disabled={isSubmitting} className="px-5 py-2.5 font-semibold text-white bg-cyan-500 hover:bg-cyan-600 rounded-xl transition-all shadow-md shadow-cyan-500/20 disabled:opacity-70 text-sm">
               {isSubmitting ? 'Saving...' : 'Save'}
             </button>
           </div>
