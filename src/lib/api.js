@@ -74,7 +74,25 @@ export const createProject = async (projectData) => {
     .insert([payload])
     .select();
     
-  if (error) throw new Error(error.message);
+  if (error) {
+    // Fallback if Postgres schema missing new optional columns
+    if (error.message && (error.message.includes('column') || error.code === 'PGRST204')) {
+      const safePayload = { ...payload };
+      delete safePayload.construction_year;
+      delete safePayload.remarks;
+      delete safePayload.work_type;
+      delete safePayload.current_condition;
+
+      const { data: retryData, error: retryError } = await supabase
+        .from('road_projects')
+        .insert([safePayload])
+        .select();
+
+      if (retryError) throw new Error(retryError.message);
+      return retryData[0];
+    }
+    throw new Error(error.message);
+  }
   return data[0];
 };
 
@@ -87,7 +105,26 @@ export const updateProject = async (projectData) => {
     .eq('id', id)
     .select();
     
-  if (error) throw new Error(error.message);
+  if (error) {
+    // Fallback if Postgres schema missing new optional columns
+    if (error.message && (error.message.includes('column') || error.code === 'PGRST204')) {
+      const safePayload = { ...payload };
+      delete safePayload.construction_year;
+      delete safePayload.remarks;
+      delete safePayload.work_type;
+      delete safePayload.current_condition;
+
+      const { data: retryData, error: retryError } = await supabase
+        .from('road_projects')
+        .update(safePayload)
+        .eq('id', id)
+        .select();
+
+      if (retryError) throw new Error(retryError.message);
+      return retryData[0];
+    }
+    throw new Error(error.message);
+  }
   return data[0];
 };
 

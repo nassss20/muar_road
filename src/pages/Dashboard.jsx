@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Search, Map as MapIcon, Edit2, Trash2, Sparkles, FileSpreadsheet } from 'lucide-react';
+import { Plus, Search, Map as MapIcon, Edit2, Trash2, Sparkles, FileSpreadsheet, Calendar } from 'lucide-react';
 import { fetchProjects, fetchLccaResults, deleteProject } from '../lib/api';
 import ProjectModal from '../components/ProjectModal';
 import LccaDetailModal from '../components/LccaDetailModal';
+import MaintenanceActivityEditModal from '../components/MaintenanceActivityEditModal';
+import MaintenanceActivityModal from '../components/MaintenanceActivityModal';
 
 export default function Dashboard() {
   const [projects, setProjects] = useState([]);
@@ -13,18 +15,59 @@ export default function Dashboard() {
   // LCCA Detail Modal State
   const [selectedLccaAlternative, setSelectedLccaAlternative] = useState(null);
   const [isLccaModalOpen, setIsLccaModalOpen] = useState(false);
+  const [isMaintPopUpModalOpen, setIsMaintPopUpModalOpen] = useState(false);
 
-  const [showFab, setShowFab] = useState(false);
-  const headerBtnRef = useRef(null);
+  // Maintenance Activity State
+  const [maintenanceActivities, setMaintenanceActivities] = useState(() => {
+    const saved = localStorage.getItem('muar_maintenance_activities');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return [
+      {
+        id: 1,
+        year: '2024',
+        maintenance_activity: 'Mill & Pave 50mm Bituminous Wearing Course (SFM)',
+        distress: 'Pothole & Longitudinal Crack (Lubang & Retak)',
+        cost_rm: 120000.00,
+        condition_after: 'Good',
+        status: 'Completed'
+      },
+      {
+        id: 2,
+        year: '2026',
+        maintenance_activity: 'Crack Sealing & Localized Patching',
+        distress: 'Transverse Cracking',
+        cost_rm: 45000.00,
+        condition_after: 'Good',
+        status: 'Scheduled'
+      }
+    ];
+  });
+
+  const [isMaintModalOpen, setIsMaintModalOpen] = useState(false);
+  const [editingMaintActivity, setEditingMaintActivity] = useState(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => setShowFab(!entry.isIntersecting),
-      { threshold: 0 }
-    );
-    if (headerBtnRef.current) observer.observe(headerBtnRef.current);
-    return () => observer.disconnect();
-  }, []);
+    localStorage.setItem('muar_maintenance_activities', JSON.stringify(maintenanceActivities));
+  }, [maintenanceActivities]);
+
+  const handleSaveMaintActivity = (activityData) => {
+    if (activityData.id) {
+      setMaintenanceActivities(prev => prev.map(a => a.id === activityData.id ? activityData : a));
+    } else {
+      const newActivity = { ...activityData, id: Date.now() };
+      setMaintenanceActivities(prev => [...prev, newActivity]);
+    }
+  };
+
+  const handleDeleteMaintActivity = (id) => {
+    if (window.confirm("Are you sure you want to delete this maintenance activity entry?")) {
+      setMaintenanceActivities(prev => prev.filter(a => a.id !== id));
+    }
+  };
+
+
 
   // Filters
   const [search, setSearch] = useState('');
@@ -98,8 +141,6 @@ export default function Dashboard() {
 
   const getMixColorClasses = (mix) => {
     switch (mix?.toUpperCase()) {
-      case 'STANDARD ROAD':
-        return 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border-cyan-500/30';
       case 'SFM':
         return 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/30';
       case 'CMA':
@@ -127,14 +168,22 @@ export default function Dashboard() {
             </h1>
           </div>
         </div>
-        <button
-          ref={headerBtnRef}
-          onClick={handleAdd}
-          className="flex items-center gap-2 px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-cyan-500/25 border border-cyan-400/20 hover:scale-[1.02] active:scale-[0.98]"
-        >
-          <Plus size={19} className="stroke-[2.5]" />
-          Add New Road Record
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => setIsMaintPopUpModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white text-white font-semibold rounded-xl transition-all shadow-md text-xs sm:text-sm"
+          >
+            <Calendar size={18} />
+            Maintenance Activity
+          </button>
+          <button
+            onClick={handleAdd}
+            className="flex items-center gap-2 px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-cyan-500/25 border border-cyan-400/20 hover:scale-[1.02] active:scale-[0.98] text-xs sm:text-sm"
+          >
+            <Plus size={19} className="stroke-[2.5]" />
+            Add New Road Record
+          </button>
+        </div>
       </div>
 
 
@@ -166,18 +215,24 @@ export default function Dashboard() {
 
         {/* Tabs and Filters */}
         <div className="p-4 sm:p-5 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/60 dark:bg-slate-950/60 flex flex-col lg:flex-row justify-between gap-4 items-stretch lg:items-center">
-          <div className="flex p-1 bg-slate-200/70 dark:bg-slate-800/70 rounded-xl self-start">
+          <div className="flex p-1 bg-slate-200/70 dark:bg-slate-800/70 rounded-xl self-start overflow-x-auto max-w-full">
             <button
               onClick={() => setActiveTab('registry')}
-              className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeTab === 'registry' ? 'bg-white dark:bg-slate-700 shadow-md text-cyan-600 dark:text-cyan-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
+              className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${activeTab === 'registry' ? 'bg-white dark:bg-slate-700 shadow-md text-cyan-600 dark:text-cyan-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
             >
               Road Project Registry
             </button>
             <button
               onClick={() => setActiveTab('lcca')}
-              className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeTab === 'lcca' ? 'bg-white dark:bg-slate-700 shadow-md text-cyan-600 dark:text-cyan-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
+              className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${activeTab === 'lcca' ? 'bg-white dark:bg-slate-700 shadow-md text-cyan-600 dark:text-cyan-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
             >
               Life Cycle Cost Analysis (LCCA)
+            </button>
+            <button
+              onClick={() => setIsMaintPopUpModalOpen(true)}
+              className="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700/50"
+            >
+              Maintenance Activity
             </button>
           </div>
 
@@ -210,7 +265,6 @@ export default function Dashboard() {
                 className="px-3.5 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all"
               >
                 <option value="">All Mixes</option>
-                <option value="Standard Road">Standard Road</option>
                 <option value="SFM">SFM</option>
                 <option value="CMA">CMA</option>
                 <option value="CRMA">CRMA</option>
@@ -222,72 +276,77 @@ export default function Dashboard() {
         </div>
 
         {/* Table Content */}
-        <div className="overflow-auto max-h-[600px] relative">
+        <div className="overflow-x-auto overflow-y-auto max-h-[600px] relative">
           {activeTab === 'registry' ? (
-            <table className="w-full text-left border-collapse">
+            <table className="w-full min-w-[1300px] text-left border-collapse">
               <thead>
-                <tr className="bg-slate-100/80 dark:bg-slate-950/80 border-b border-slate-200/80 dark:border-slate-800/80 text-[11px] uppercase text-slate-500 dark:text-slate-400 font-bold tracking-wider sticky top-0 z-10 shadow-sm backdrop-blur-md">
-                  <th className="px-4 py-3.5">Bil</th>
-                  <th className="px-4 py-3.5">Nama Laluan</th>
-                  <th className="px-4 py-3.5">Route No</th>
-                  <th className="px-4 py-3.5">Dari (KM)</th>
-                  <th className="px-4 py-3.5">Ke (KM)</th>
-                  <th className="px-4 py-3.5 text-center">Pavement Mix</th>
-                  <th className="px-4 py-3.5">Alternative</th>
-                  <th className="px-4 py-3.5">Initial Cost</th>
-                  <th className="px-4 py-3.5">Maint. Cost</th>
-                  <th className="px-4 py-3.5">Distress Type</th>
-                  <th className="px-4 py-3.5">Recurring</th>
-                  <th className="px-4 py-3.5 text-right sticky right-0 bg-slate-100 dark:bg-slate-950">Action</th>
+                <tr className="bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-[11px] uppercase text-slate-500 dark:text-slate-400 font-bold tracking-wider sticky top-0 z-20 shadow-xs">
+                  <th className="px-4 py-3.5 bg-slate-100 dark:bg-slate-900 w-12 text-center">No.</th>
+                  <th className="px-4 py-3.5 bg-slate-100 dark:bg-slate-900 min-w-[170px]">Road Name</th>
+                  <th className="px-4 py-3.5 bg-slate-100 dark:bg-slate-900 min-w-[100px]">Route No</th>
+                  <th className="px-4 py-3.5 bg-slate-100 dark:bg-slate-900 min-w-[90px]">Dari (KM)</th>
+                  <th className="px-4 py-3.5 bg-slate-100 dark:bg-slate-900 min-w-[90px]">Ke (KM)</th>
+                  <th className="px-4 py-3.5 bg-slate-100 dark:bg-slate-900 min-w-[100px]">Length</th>
+                  <th className="px-4 py-3.5 bg-slate-100 dark:bg-slate-900 min-w-[130px] text-center">Pavement Mix</th>
+                  <th className="px-4 py-3.5 bg-slate-100 dark:bg-slate-900 min-w-[160px]">Work Type</th>
+                  <th className="px-4 py-3.5 bg-slate-100 dark:bg-slate-900 min-w-[140px]">Initial Cost</th>
+                  <th className="px-4 py-3.5 bg-slate-100 dark:bg-slate-900 min-w-[180px]">Current Condition</th>
+                  <th className="px-4 py-3.5 bg-slate-100 dark:bg-slate-900 min-w-[120px]">Recurring</th>
+                  <th className="px-4 py-3.5 bg-slate-100 dark:bg-slate-900 min-w-[100px]">Lane</th>
+                  <th className="px-4 py-3.5 bg-slate-100 dark:bg-slate-900 text-right sticky right-0 z-30 min-w-[100px] border-l border-slate-200 dark:border-slate-800">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200/60 dark:divide-slate-800/60 text-sm">
                 {loading ? (
-                  <tr><td colSpan="12" className="px-4 py-12 text-center text-slate-400">Loading road network registry...</td></tr>
+                  <tr><td colSpan="13" className="px-4 py-12 text-center text-slate-400">Loading road network registry...</td></tr>
                 ) : filteredProjects.length === 0 ? (
-                  <tr><td colSpan="12" className="px-4 py-12 text-center text-slate-400">No project records found.</td></tr>
+                  <tr><td colSpan="13" className="px-4 py-12 text-center text-slate-400">No project records found.</td></tr>
                 ) : (
-                  filteredProjects.map(p => (
-                    <tr key={p.id} className="hover:bg-slate-100/50 dark:hover:bg-slate-800/40 transition-colors">
-                      <td className="px-4 py-3 text-slate-400 text-xs font-mono">{p.id}</td>
-                      <td className="px-4 py-3 font-semibold text-slate-900 dark:text-slate-100">{p.road_name}</td>
-                      <td className="px-4 py-3">
-                        <span className="px-2.5 py-1 rounded-md bg-slate-200/60 dark:bg-slate-800 text-xs font-medium font-mono text-slate-700 dark:text-slate-300">{p.route_no || '-'}</span>
-                      </td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs">{p.start_km}</td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs">{p.end_km}</td>
-                      <td className="px-4 py-3 text-center">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getMixColorClasses(p.mix_category)}`}>
-                          {p.mix_category}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-medium text-xs">{p.pavement_alternative || '-'}</td>
-                      <td className="px-4 py-3 text-slate-700 dark:text-slate-200 font-semibold text-xs whitespace-nowrap">RM {p.cost_rm?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 text-xs whitespace-nowrap">{p.maintenance_cost ? `RM ${p.maintenance_cost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '-'}</td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 text-xs">{p.distress_1_type || '-'}</td>
-                      <td className="px-4 py-3 text-xs font-medium">
-                        {p.is_recurring === 'Ya' ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-                            Yes (Ya)
+                  filteredProjects.map((p, index) => {
+                    const calculatedLength = p.length_km || (p.start_km !== undefined && p.end_km !== undefined ? Math.abs((parseFloat(p.end_km) || 0) - (parseFloat(p.start_km) || 0)).toFixed(2) : '-');
+                    return (
+                      <tr key={p.id} className="hover:bg-slate-100/50 dark:hover:bg-slate-800/40 transition-colors">
+                        <td className="px-4 py-3 text-slate-400 text-xs font-mono text-center font-bold">{index + 1}</td>
+                        <td className="px-4 py-3 font-semibold text-slate-900 dark:text-slate-100 whitespace-nowrap">{p.road_name}</td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <span className="px-2 py-0.5 rounded-md bg-slate-200/60 dark:bg-slate-800 text-xs font-medium font-mono text-slate-700 dark:text-slate-300">{p.route_no || '-'}</span>
+                        </td>
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs whitespace-nowrap">{p.start_km}</td>
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs whitespace-nowrap">{p.end_km}</td>
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-xs whitespace-nowrap">{calculatedLength} km</td>
+                        <td className="px-4 py-3 text-center whitespace-nowrap">
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getMixColorClasses(p.mix_category)}`}>
+                            {p.mix_category || 'N/A'}
                           </span>
-                        ) : (
-                          <span className="text-slate-500 dark:text-slate-400">
-                            No (Tidak)
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-right sticky right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-l border-slate-200/50 dark:border-slate-800/50">
-                        <div className="flex justify-end gap-1.5">
-                          <button onClick={() => handleEdit(p)} className="p-1.5 text-cyan-600 hover:bg-cyan-50 dark:text-cyan-400 dark:hover:bg-cyan-950/50 rounded-lg transition-colors" title="Edit">
-                            <Edit2 size={16} />
-                          </button>
-                          <button onClick={() => handleDelete(p.id)} className="p-1.5 text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/50 rounded-lg transition-colors" title="Delete">
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                        </td>
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-300 font-medium text-xs whitespace-nowrap">{p.pavement_alternative || p.work_type || '-'}</td>
+                        <td className="px-4 py-3 text-slate-700 dark:text-slate-200 font-semibold text-xs whitespace-nowrap">RM {p.cost_rm?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-300 text-xs whitespace-nowrap">{p.distress_1_type || p.current_condition || '-'}</td>
+                        <td className="px-4 py-3 text-xs font-medium whitespace-nowrap">
+                          {p.is_recurring === 'Ya' || p.is_recurring === 'Yes' ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                              Yes (Ya)
+                            </span>
+                          ) : (
+                            <span className="text-slate-500 dark:text-slate-400">
+                              No (Tidak)
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-300 text-xs font-mono whitespace-nowrap">{p.lane_type || '-'}</td>
+                        <td className="px-4 py-3 text-right sticky right-0 z-10 bg-white dark:bg-slate-900 border-l border-slate-200/80 dark:border-slate-800/80 shadow-xs">
+                          <div className="flex justify-end gap-1.5">
+                            <button onClick={() => handleEdit(p)} className="p-1.5 text-cyan-600 hover:bg-cyan-50 dark:text-cyan-400 dark:hover:bg-cyan-950/50 rounded-lg transition-colors" title="Edit Record">
+                              <Edit2 size={16} />
+                            </button>
+                            <button onClick={() => handleDelete(p.id)} className="p-1.5 text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/50 rounded-lg transition-colors" title="Delete Record">
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -425,15 +484,19 @@ export default function Dashboard() {
         alternativeKey={selectedLccaAlternative}
       />
 
-      {showFab && (
-        <button
-          onClick={handleAdd}
-          className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 flex items-center justify-center w-14 h-14 bg-cyan-500 hover:bg-cyan-600 text-white rounded-full shadow-2xl shadow-cyan-500/40 border border-cyan-400/30 transition-transform animate-fade-in hover:scale-105"
-          title="Add New Record"
-        >
-          <Plus size={28} />
-        </button>
-      )}
+      <MaintenanceActivityEditModal
+        isOpen={isMaintModalOpen}
+        onClose={() => setIsMaintModalOpen(false)}
+        activity={editingMaintActivity}
+        onSave={handleSaveMaintActivity}
+      />
+
+      <MaintenanceActivityModal
+        isOpen={isMaintPopUpModalOpen}
+        onClose={() => setIsMaintPopUpModalOpen(false)}
+        title="Maintenance Activity"
+      />
+
     </div>
   );
 }

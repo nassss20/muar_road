@@ -27,15 +27,19 @@ CREATE TABLE road_projects (
   cost_rm DECIMAL(15,2),
   maintenance_cost DECIMAL(15,2),
   pavement_alternative VARCHAR(255),
+  work_type VARCHAR(255),
   work_description TEXT,
   analysis_method VARCHAR(100),
   geometry_feature VARCHAR(100),
   distress_1_type VARCHAR(255),
+  current_condition VARCHAR(255),
   distress_1_severity VARCHAR(100),
   distress_2_type VARCHAR(255),
   distress_2_severity VARCHAR(100),
   recurring_distress VARCHAR(255),
-  is_recurring VARCHAR(50)
+  is_recurring VARCHAR(50),
+  construction_year INT,
+  remarks TEXT
 );
 
 INSERT INTO road_projects (mix_category, road_name, start_km, end_km, length_km, route_no, lane_type, cost_rm, pavement_alternative, work_description, distress_1_type, is_recurring) VALUES 
@@ -50,10 +54,9 @@ INSERT INTO road_projects (mix_category, road_name, start_km, end_km, length_km,
 ('CMA', 'Johor Bahru - Melaka', 172.0, 173.0, '1.0', 'FT 0005', 'L&R', 850000.00, 'Regulate & Overlay', '2019 - CMA Program', 'Crack (Retak)', 'Ya'),
 ('LATEX', 'Muar By Pass', 12.0, 13.0, '1.0', 'FT 0224', 'LHS', 899977.18, 'Major Rehabilitation & Patching', '2022 - LATEX Program', 'Shoving (Anjakan / Engsutan Premix)', 'Ya'),
 ('LATEX', 'Yong Peng - Muar', 44.0, 45.0, '1.0', 'FT 0024', 'RHS', 870000.00, 'Corrective Maintenance', '2021 - LATEX Program', 'Crack (Retak)', 'Ya'),
-('LATEX', 'Yong Peng - Muar', 53.0, 54.0, '1.0', 'FT 0024', 'L&R', 870000.00, 'Frequent Patching', '2021 - LATEX Program', 'Pothole (Lubang)', 'Ya'),
-('Standard Road', 'Jalan Parit Yusof', 1.0, 3.0, '2.0', 'FT 0224', 'L&R', 600000.00, 'Mill & Pave', '2023 - Routine Maintenance', 'None / Healthy (Tiada Kerosakan)', 'Tidak'),
-('Standard Road', 'Jalan Parit Yusof', 3.0, 5.0, '2.0', 'FT 0224', 'L&R', 650000.00, 'Regulate & Overlay', '2023 - Routine Maintenance', 'None / Healthy (Tiada Kerosakan)', 'Tidak'),
-('Standard Road', 'Johor Bahru - Melaka', 167.0, 169.0, '2.0', 'FT 0005', 'L&R', 750000.00, 'Mill In Lay', '2022 - Standard Resurfacing', 'None / Healthy (Tiada Kerosakan)', 'Tidak');
+('AC', 'Jalan Parit Yusof', 1.0, 3.0, '2.0', 'FT 0224', 'L&R', 600000.00, 'Mill & Pave', '2023 - Routine Maintenance', 'None / Healthy (Tiada Kerosakan)', 'Tidak'),
+('AC', 'Jalan Parit Yusof', 3.0, 5.0, '2.0', 'FT 0224', 'L&R', 650000.00, 'Regulate & Overlay', '2023 - Routine Maintenance', 'None / Healthy (Tiada Kerosakan)', 'Tidak'),
+('AC', 'Johor Bahru - Melaka', 167.0, 169.0, '2.0', 'FT 0005', 'L&R', 750000.00, 'Mill In Lay', '2022 - Standard Resurfacing', 'None / Healthy (Tiada Kerosakan)', 'Tidak');
 
 -- Table structure for lcca_results
 DROP TABLE IF EXISTS lcca_results;

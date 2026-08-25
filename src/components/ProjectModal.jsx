@@ -9,13 +9,14 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
     route_no: '',
     start_km: '',
     end_km: '',
-    mix_category: 'Standard Road',
+    length_km: '',
+    mix_category: '',
+    construction_year: new Date().getFullYear().toString(),
     pavement_alternative: '',
     cost_rm: '',
-    maintenance_cost: '',
-    lane_type: '',
-    distress_1_type: '',
+    distress_1_type: 'None / Healthy (Tiada Kerosakan)',
     is_recurring: 'Tidak',
+    lane_type: '',
     work_description: '',
     latitude: '',
     longitude: '',
@@ -26,22 +27,27 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
 
   useEffect(() => {
     if (project) {
+      const start = parseFloat(project.start_km);
+      const end = parseFloat(project.end_km);
+      const calcLength = (!isNaN(start) && !isNaN(end)) ? Math.abs(end - start).toFixed(2) : '';
+
       setFormData({
         id: project.id,
         road_name: project.road_name || 'Muar By Pass',
         route_no: project.route_no || '',
-        start_km: project.start_km || '',
-        end_km: project.end_km || '',
-        mix_category: project.mix_category || 'Standard Road',
-        pavement_alternative: project.pavement_alternative || '',
-        cost_rm: project.cost_rm || '',
-        maintenance_cost: project.maintenance_cost || '',
-        lane_type: project.lane_type || '',
-        distress_1_type: project.distress_1_type || '',
+        start_km: project.start_km !== undefined && project.start_km !== null ? project.start_km : '',
+        end_km: project.end_km !== undefined && project.end_km !== null ? project.end_km : '',
+        length_km: project.length_km || calcLength,
+        mix_category: project.mix_category || '',
+        construction_year: project.construction_year || '',
+        pavement_alternative: project.pavement_alternative || project.work_type || '',
+        cost_rm: project.cost_rm !== undefined && project.cost_rm !== null ? project.cost_rm : '',
+        distress_1_type: project.distress_1_type || project.current_condition || 'None / Healthy (Tiada Kerosakan)',
         is_recurring: project.is_recurring || 'Tidak',
+        lane_type: project.lane_type || '',
         work_description: project.work_description || '',
-        latitude: project.latitude || '',
-        longitude: project.longitude || '',
+        latitude: project.latitude !== undefined && project.latitude !== null ? project.latitude : '',
+        longitude: project.longitude !== undefined && project.longitude !== null ? project.longitude : '',
         remarks: project.remarks || ''
       });
     } else {
@@ -50,13 +56,14 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
         route_no: '',
         start_km: '',
         end_km: '',
-        mix_category: 'Standard Road',
+        length_km: '',
+        mix_category: '',
+        construction_year: new Date().getFullYear().toString(),
         pavement_alternative: '',
         cost_rm: '',
-        maintenance_cost: '',
-        lane_type: '',
-        distress_1_type: '',
+        distress_1_type: 'None / Healthy (Tiada Kerosakan)',
         is_recurring: 'Tidak',
+        lane_type: '',
         work_description: '',
         latitude: '',
         longitude: '',
@@ -69,22 +76,39 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => {
+      const updated = { ...prev, [name]: value };
+      if (name === 'start_km' || name === 'end_km') {
+        const start = parseFloat(name === 'start_km' ? value : prev.start_km);
+        const end = parseFloat(name === 'end_km' ? value : prev.end_km);
+        if (!isNaN(start) && !isNaN(end)) {
+          updated.length_km = Math.abs(end - start).toFixed(2);
+        }
+      }
+      return updated;
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Format data
+    // Auto calculate length if empty
+    const start = parseFloat(formData.start_km);
+    const end = parseFloat(formData.end_km);
+    const calculatedLength = (!isNaN(start) && !isNaN(end)) ? Math.abs(end - start).toFixed(2) : '0.00';
+
     const payload = {
       ...formData,
-      start_km: parseFloat(formData.start_km) || 0,
-      end_km: parseFloat(formData.end_km) || 0,
+      start_km: !isNaN(start) ? start : 0,
+      end_km: !isNaN(end) ? end : 0,
+      length_km: formData.length_km || calculatedLength,
       cost_rm: parseFloat(formData.cost_rm) || 0,
-      maintenance_cost: parseFloat(formData.maintenance_cost) || 0,
-      latitude: formData.latitude ? parseFloat(formData.latitude) : null,
-      longitude: formData.longitude ? parseFloat(formData.longitude) : null
+      construction_year: formData.construction_year ? parseInt(formData.construction_year, 10) : null,
+      work_type: formData.pavement_alternative,
+      current_condition: formData.distress_1_type,
+      latitude: formData.latitude !== '' && formData.latitude !== null ? parseFloat(formData.latitude) : null,
+      longitude: formData.longitude !== '' && formData.longitude !== null ? parseFloat(formData.longitude) : null
     };
 
     try {
@@ -98,7 +122,7 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
       onSave();
     } catch (err) {
       console.error(err);
-      alert(err.message || 'Failed to save project');
+      alert(err.message || 'Failed to save project record');
     } finally {
       setIsSubmitting(false);
     }
@@ -106,44 +130,125 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md animate-fade-in">
-      <div className="bg-white/95 dark:bg-slate-900/95 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-slate-200/80 dark:border-slate-800">
+      <div className="bg-white/95 dark:bg-slate-900/95 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-slate-200/80 dark:border-slate-800">
         
-        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl">
+        {/* Header */}
+        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl">
           <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             {project ? 'Edit Road Record' : 'Add New Road Record'}
           </h2>
-          <button onClick={onClose} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
+          <button 
+            type="button"
+            onClick={onClose} 
+            className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+          >
             <X size={20} />
           </button>
         </div>
 
+        {/* Form Container */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            
+            {/* 1. ROAD NAME */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Nama Laluan (Road Name) *</label>
-              <select name="road_name" value={formData.road_name} onChange={handleChange} required className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none">
-                <option value="Muar By Pass">Muar Bypass (FT0224)</option>
-                <option value="Yong Peng - Muar">Yong Peng - Muar (FT0024)</option>
-                <option value="Johor Bahru - Melaka">Johor Bahru - Melaka (FT0005)</option>
-                <option value="Jalan Parit Yusof">Jalan Parit Yusof</option>
-              </select>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                Road Name *
+              </label>
+              <input
+                type="text"
+                name="road_name"
+                value={formData.road_name}
+                onChange={handleChange}
+                required
+                list="road-name-list"
+                placeholder="e.g. Muar By Pass"
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none"
+              />
+              <datalist id="road-name-list">
+                <option value="Muar By Pass" />
+                <option value="Yong Peng - Muar" />
+                <option value="Johor Bahru - Melaka" />
+                <option value="Jalan Parit Yusof" />
+              </datalist>
             </div>
+
+            {/* 2. ROUTE NO */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">No. Laluan (Route Number)</label>
-              <input type="text" name="route_no" value={formData.route_no} onChange={handleChange} placeholder="e.g. FT 0224" className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                Route No.
+              </label>
+              <input 
+                type="text" 
+                name="route_no" 
+                value={formData.route_no} 
+                onChange={handleChange} 
+                placeholder="e.g. FT 0224" 
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" 
+              />
             </div>
+
+            {/* 3. KM FROM & KM TO */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Dari KM (Start KM) *</label>
-              <input type="number" step="0.001" name="start_km" value={formData.start_km} onChange={handleChange} required placeholder="0.0" className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                KM From (Dari KM) *
+              </label>
+              <input 
+                type="number" 
+                step="0.001" 
+                name="start_km" 
+                value={formData.start_km} 
+                onChange={handleChange} 
+                required 
+                placeholder="0.000" 
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" 
+              />
             </div>
+
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Ke KM (End KM) *</label>
-              <input type="number" step="0.001" name="end_km" value={formData.end_km} onChange={handleChange} required placeholder="1.0" className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                KM To (Ke KM) *
+              </label>
+              <input 
+                type="number" 
+                step="0.001" 
+                name="end_km" 
+                value={formData.end_km} 
+                onChange={handleChange} 
+                required 
+                placeholder="1.000" 
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" 
+              />
             </div>
+
+            {/* 4. LENGTH (KM) */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Mix Category</label>
-              <select name="mix_category" value={formData.mix_category} onChange={handleChange} className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none">
-                <option value="Standard Road">Standard Road</option>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                Length (KM)
+              </label>
+              <input 
+                type="text" 
+                name="length_km" 
+                value={formData.length_km} 
+                onChange={handleChange} 
+                placeholder="Calculated automatically (e.g. 1.0)" 
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-950/80 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none font-mono" 
+              />
+            </div>
+
+            {/* 5. PAVEMENT MIX */}
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                Pavement Mix *
+              </label>
+              <select 
+                name="mix_category" 
+                value={formData.mix_category} 
+                onChange={handleChange} 
+                required
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none"
+              >
+                <option value="">-- Select Pavement Mix --</option>
                 <option value="SFM">SFM</option>
                 <option value="CMA">CMA</option>
                 <option value="CRMA">CRMA</option>
@@ -151,27 +256,80 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
                 <option value="AC">AC</option>
               </select>
             </div>
+
+            {/* 6. CONSTRUCTION YEAR */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Pavement Alternative / Treatment</label>
-              <input type="text" name="pavement_alternative" value={formData.pavement_alternative} onChange={handleChange} placeholder="e.g. Mill & Pave, Regulate" className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                Construction Year
+              </label>
+              <input 
+                type="number" 
+                min="1990" 
+                max="2100"
+                name="construction_year" 
+                value={formData.construction_year} 
+                onChange={handleChange} 
+                placeholder="e.g. 2022" 
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none font-mono" 
+              />
             </div>
+
+            {/* 7. WORK TYPE */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Initial Cost (RM)</label>
-              <input type="number" step="0.01" name="cost_rm" value={formData.cost_rm} onChange={handleChange} placeholder="0.00" className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                Work Type
+              </label>
+              <input 
+                type="text" 
+                name="pavement_alternative" 
+                value={formData.pavement_alternative} 
+                onChange={handleChange} 
+                list="work-type-list"
+                placeholder="e.g. Mill & Pave, Regulate & Overlay" 
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" 
+              />
+              <datalist id="work-type-list">
+                <option value="Mill & Pave" />
+                <option value="Regulate & Overlay" />
+                <option value="Regulate / Mill In Lay" />
+                <option value="Overlay" />
+                <option value="Major Rehabilitation & Patching" />
+                <option value="Corrective Maintenance" />
+                <option value="Routine Maintenance" />
+                <option value="Standard Resurfacing" />
+              </datalist>
             </div>
+
+            {/* 8. INITIAL COST (RM) */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Maintenance Cost (RM)</label>
-              <input type="number" step="0.01" name="maintenance_cost" value={formData.maintenance_cost} onChange={handleChange} placeholder="0.00" className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                Initial Cost (RM)
+              </label>
+              <input 
+                type="number" 
+                step="0.01" 
+                name="cost_rm" 
+                value={formData.cost_rm} 
+                onChange={handleChange} 
+                placeholder="0.00" 
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none font-mono" 
+              />
             </div>
+
+            {/* 9. CURRENT CONDITION */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Lane / Direction</label>
-              <input type="text" name="lane_type" value={formData.lane_type} onChange={handleChange} placeholder="e.g. LHS, RHS, L&R" className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Distress Type</label>
-              <select name="distress_1_type" value={formData.distress_1_type} onChange={handleChange} className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none">
-                <option value="">None / Healthy (Tiada Kerosakan)</option>
-                <option value="Tiada kerosakan">None / Healthy (Tiada Kerosakan)</option>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                Current Condition
+              </label>
+              <select 
+                name="distress_1_type" 
+                value={formData.distress_1_type} 
+                onChange={handleChange} 
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none"
+              >
+                <option value="None / Healthy (Tiada Kerosakan)">Good / Healthy (Tiada Kerosakan)</option>
+                <option value="Fair">Fair (Sederhana)</option>
+                <option value="Poor">Poor (Teruk)</option>
                 <option value="Pothole">Pothole (Lubang)</option>
                 <option value="Crack">Crack (Retak)</option>
                 <option value="Pothole & Crack">Pothole & Crack (Lubang & Retak)</option>
@@ -182,28 +340,88 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
                 <option value="Ravelling">Ravelling (Pelepasan Agregat)</option>
                 <option value="Depression">Depression (Mendakan)</option>
                 <option value="Edge Failure">Edge Failure (Kerosakan Tepi Jalan)</option>
-                <option value="Kekerapan">High Distress Frequency (Kekerapan Kerosakan)</option>
               </select>
             </div>
+
+            {/* 10. RECURRING DAMAGE (YES/NO) */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Distress Recurring?</label>
-              <select name="is_recurring" value={formData.is_recurring} onChange={handleChange} className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                Recurring Damage (Yes / No)
+              </label>
+              <select 
+                name="is_recurring" 
+                value={formData.is_recurring} 
+                onChange={handleChange} 
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none"
+              >
                 <option value="Tidak">No (Tidak)</option>
                 <option value="Ya">Yes (Ya)</option>
               </select>
             </div>
+
+            {/* 11. LANE / DIRECTION */}
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                Lane / Direction
+              </label>
+              <input 
+                type="text" 
+                name="lane_type" 
+                value={formData.lane_type} 
+                onChange={handleChange} 
+                placeholder="e.g. LHS, RHS, L&R" 
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" 
+              />
+            </div>
+
+            {/* 12. WORK DESCRIPTION / YEARS PROGRAM */}
             <div className="md:col-span-2">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Work Description / Years Program</label>
-              <input type="text" name="work_description" value={formData.work_description} onChange={handleChange} placeholder="e.g. 2022 - FASA 2" className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                Work Description / Years Program
+              </label>
+              <input 
+                type="text" 
+                name="work_description" 
+                value={formData.work_description} 
+                onChange={handleChange} 
+                placeholder="e.g. 2022 - FASA 2" 
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" 
+              />
             </div>
+
+            {/* 13. LATITUDE */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Latitude (Optional overrides)</label>
-              <input type="number" step="0.00000001" name="latitude" value={formData.latitude} onChange={handleChange} placeholder="e.g. 2.0305" className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                Latitude
+              </label>
+              <input 
+                type="number" 
+                step="0.00000001" 
+                name="latitude" 
+                value={formData.latitude} 
+                onChange={handleChange} 
+                placeholder="e.g. 2.0305" 
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none font-mono" 
+              />
             </div>
+
+            {/* 14. LONGITUDE */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">Longitude (Optional overrides)</label>
-              <input type="number" step="0.00000001" name="longitude" value={formData.longitude} onChange={handleChange} placeholder="e.g. 102.5888" className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                Longitude
+              </label>
+              <input 
+                type="number" 
+                step="0.00000001" 
+                name="longitude" 
+                value={formData.longitude} 
+                onChange={handleChange} 
+                placeholder="e.g. 102.5888" 
+                className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none font-mono" 
+              />
             </div>
+
+            {/* 15. REMARKS */}
             <div className="md:col-span-2 space-y-1.5">
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                 Remarks
@@ -213,18 +431,28 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
                 rows={3}
                 value={formData.remarks}
                 onChange={handleChange}
-                placeholder="Enter remarks..."
+                placeholder="Enter remarks or additional notes..."
                 className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm outline-none resize-y min-h-[80px]"
               />
             </div>
+
           </div>
           
+          {/* Footer Buttons */}
           <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
-            <button type="button" onClick={onClose} className="px-4 py-2.5 font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-sm">
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="px-4 py-2.5 font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-sm"
+            >
               Cancel
             </button>
-            <button type="submit" disabled={isSubmitting} className="px-5 py-2.5 font-semibold text-white bg-cyan-500 hover:bg-cyan-600 rounded-xl transition-all shadow-md shadow-cyan-500/20 disabled:opacity-70 text-sm">
-              {isSubmitting ? 'Saving...' : 'Save'}
+            <button 
+              type="submit" 
+              disabled={isSubmitting} 
+              className="px-5 py-2.5 font-semibold text-white bg-cyan-500 hover:bg-cyan-600 rounded-xl transition-all shadow-md shadow-cyan-500/20 disabled:opacity-70 text-sm"
+            >
+              {isSubmitting ? 'Saving...' : 'Save Record'}
             </button>
           </div>
         </form>
@@ -234,3 +462,4 @@ export default function ProjectModal({ isOpen, onClose, project, onSave }) {
     document.body
   );
 }
+
