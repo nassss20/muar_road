@@ -327,6 +327,13 @@ export default function Dashboard() {
                         <td className="px-4 py-3 text-slate-600 dark:text-slate-300 text-xs font-mono whitespace-nowrap">{p.lane_type || '-'}</td>
                         <td className="px-4 py-3 text-right sticky right-0 z-10 bg-white dark:bg-slate-900 border-l border-slate-200/80 dark:border-slate-800/80 shadow-xs">
                           <div className="flex justify-end gap-1.5">
+                            <button
+                              onClick={() => setIsMaintPopUpModalOpen(true)}
+                              className="p-1.5 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                              title="Maintenance Activity Pop-Up"
+                            >
+                              <Calendar size={16} />
+                            </button>
                             <button onClick={() => handleEdit(p)} className="p-1.5 text-cyan-600 hover:bg-cyan-50 dark:text-cyan-400 dark:hover:bg-cyan-950/50 rounded-lg transition-colors" title="Edit Record">
                               <Edit2 size={16} />
                             </button>
