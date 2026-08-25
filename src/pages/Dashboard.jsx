@@ -168,22 +168,13 @@ export default function Dashboard() {
             </h1>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            onClick={() => setIsMaintPopUpModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white text-white font-semibold rounded-xl transition-all shadow-md text-xs sm:text-sm"
-          >
-            <Calendar size={18} />
-            Maintenance Activity
-          </button>
-          <button
-            onClick={handleAdd}
-            className="flex items-center gap-2 px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-cyan-500/25 border border-cyan-400/20 hover:scale-[1.02] active:scale-[0.98] text-xs sm:text-sm"
-          >
-            <Plus size={19} className="stroke-[2.5]" />
-            Add New Road Record
-          </button>
-        </div>
+        <button
+          onClick={handleAdd}
+          className="flex items-center gap-2 px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-cyan-500/25 border border-cyan-400/20 hover:scale-[1.02] active:scale-[0.98] text-xs sm:text-sm"
+        >
+          <Plus size={19} className="stroke-[2.5]" />
+          Add New Road Record
+        </button>
       </div>
 
 
